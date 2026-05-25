@@ -6,7 +6,6 @@ dist-uat/
 dist-site/
 dist-dev/
 /components.d.ts
-/src/utils/request.ts
 /src/auto-imports.d.ts
 /.eslintrc-auto-import.json
 
