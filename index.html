@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+        <!-- Content Security Policy: 允许高德地图API使用unsafe-eval和OSS文件上传 -->
+        <!-- 注意：如果服务器端也设置了CSP，服务器端的配置会覆盖此meta标签 -->
+        <!-- frame-src 必须包含 OSS 域名，因为文件上传使用 iframe 提交表单到 OSS -->
+        <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src *; img-src * data: blob:; style-src * 'unsafe-inline'; font-src * data:; worker-src * blob:; frame-src * https://*.aliyuncs.com https://*.oss-cn-*.aliyuncs.com https://test-lingdi-channel.oss-cn-guangzhou.aliyuncs.com https://*.ld3.xyz;">
+        <title>短剧管理平台</title>
+        <link
+            rel="icon"
+            type="image/svg+xml"
+            href="/src/assets/img/logo_240.png?v=2"
+        />
+        <link
+            rel="shortcut icon"
+            type="image/svg+xml"
+            href="/src/assets/img/logo_240.png?v=2"
+        />
+        <link rel="stylesheet" href="//at.alicdn.com/t/c/font_830376_92o68tc95je.css" />
+        <script src="//at.alicdn.com/t/c/font_5069358_k2hfl3om8dk.js"></script>
+    </head>
+
+    <body>
+        <noscript>
+            <strong
+                >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly
+                without JavaScript enabled. Please enable it to continue.</strong
+            >
+        </noscript>
+        <div id="app"></div>
+        <script type="module" src="/src/main.ts"></script>
+        <!-- built files will be auto injected -->
+    </body>
+</html>

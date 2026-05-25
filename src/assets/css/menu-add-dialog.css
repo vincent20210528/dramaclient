@@ -1,0 +1,325 @@
+/**
+ * 与菜单管理「新增/编辑」弹窗一致（class="menu-add-dialog" + form class="add-form-menu"）
+ * 全局引入，避免 el-dialog 挂载到 body 时 scoped 样式不生效。
+ */
+
+.menu-add-dialog.el-dialog {
+    padding: 0;
+    max-width: 92vw;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.menu-add-dialog .el-dialog__header {
+    position: relative;
+    margin: 0;
+    padding: 0 44px 0 20px;
+    height: 68px;
+    min-height: 68px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    background-color: #edf1fc;
+    border-bottom: none;
+}
+
+.menu-add-dialog .el-dialog__headerbtn {
+    top: 16px;
+    right: 16px;
+    transform: none;
+    margin: 0;
+    width: 36px;
+    height: 36px;
+}
+
+.menu-add-dialog .el-dialog__headerbtn .el-dialog__close {
+    color: #909399;
+}
+
+.menu-add-dialog .el-dialog__headerbtn:hover .el-dialog__close {
+    color: #606266;
+}
+
+.menu-add-dialog .el-dialog__title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #303133;
+    line-height: 1.3;
+}
+
+.menu-add-dialog .el-dialog__body {
+    padding: 20px 20px 8px;
+    background-color: #ffffff;
+    max-height: 68vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.menu-add-dialog .add-form-menu .el-form-item {
+    margin-bottom: 18px;
+}
+
+.menu-add-dialog .add-form-menu .el-form-item__label {
+    font-size: 13px;
+    color: #303133;
+}
+
+.menu-add-dialog .add-form-menu .el-form-item.is-required .el-form-item__label::before {
+    color: #f56c6c;
+}
+
+.menu-add-dialog .add-form-menu .el-input,
+.menu-add-dialog .add-form-menu .el-select,
+.menu-add-dialog .add-form-menu .el-cascader,
+.menu-add-dialog .add-form-menu .el-input-number,
+.menu-add-dialog .add-form-menu .el-date-editor {
+    width: 100%;
+}
+
+.menu-add-dialog .el-input__wrapper {
+    min-height: 40px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .el-select .el-select__wrapper {
+    min-height: 40px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .el-cascader .el-input__wrapper {
+    min-height: 40px;
+    border-radius: 10px;
+}
+
+.menu-add-dialog .el-input-number .el-input__wrapper {
+    min-height: 40px;
+    border-radius: 10px;
+}
+
+.menu-add-dialog .el-date-editor.el-input__wrapper {
+    min-height: 40px;
+    border-radius: 10px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .el-textarea .el-textarea__inner {
+    border-radius: 10px;
+    min-height: 88px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .el-divider {
+    margin: 4px 0 18px;
+}
+
+.menu-add-dialog .add-form-menu > .el-divider:first-of-type {
+    margin-top: 0;
+}
+
+.menu-add-dialog .el-input.is-disabled .el-input__wrapper,
+.menu-add-dialog .el-textarea.is-disabled .el-textarea__inner {
+    background-color: #f5f7fa;
+}
+
+.menu-add-dialog .el-divider__text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #303133;
+}
+
+.menu-add-dialog .el-dialog__footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px 20px;
+    border-top: none;
+    background-color: #ffffff;
+}
+
+.menu-add-dialog .el-dialog__footer .el-button {
+    min-width: 88px;
+    height: 40px;
+    border-radius: 10px;
+    padding: 0 18px;
+}
+
+.menu-add-dialog .el-dialog__footer .el-button:not(.el-button--primary) {
+    background-color: #EEF1FE;
+    border-color: #2D53EB;
+    color: #2D53EB;
+}
+
+.menu-add-dialog .el-dialog__footer .el-button:not(.el-button--primary):hover {
+    background-color: #e0e8f8;
+    border-color: #2D53EB;
+    color: #2D53EB;
+}
+
+.menu-add-dialog .el-dialog__footer .el-button--primary {
+    background-color: #1c53d9;
+    border-color: #1c53d9;
+}
+
+.menu-add-dialog .el-dialog__footer .el-button--primary:hover {
+    background-color: #1748c4;
+    border-color: #1748c4;
+}
+
+/* 剧集管理等：分区块（el-divider）上下留白更大 */
+.menu-add-dialog--section-gap .el-divider {
+    margin: 18px 0 26px;
+}
+
+.menu-add-dialog--section-gap .add-form-menu > .el-divider:first-of-type {
+    margin-top: 0;
+}
+
+/* 剧集新增/编辑：标签信息、版权信息与上一区块间距加大 */
+.menu-add-dialog--section-gap .add-form-menu > .el-divider.drama-section-divider--top-loose {
+    margin-top: 36px !important;
+}
+
+/* 与用户管理「添加成员」选图：按钮尺寸与横向「按钮 + 预览」布局 */
+.menu-add-dialog .user-avatar-pick-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 104px !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    border-radius: 6px !important;
+    background-color: #2d53eb !important;
+    border-color: #2d53eb !important;
+    color: #ffffff !important;
+}
+
+.menu-add-dialog .user-avatar-pick-btn:hover,
+.menu-add-dialog .user-avatar-pick-btn:focus {
+    background-color: #2447d4 !important;
+    border-color: #2447d4 !important;
+    color: #ffffff !important;
+}
+
+.menu-add-dialog .avatar-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    height: 72px;
+    min-height: 72px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .cover-pick-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+    min-height: 96px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .avatar-preview-side {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+    height: 64px;
+    min-height: 64px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .cover-preview-side {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    flex: 1;
+    min-height: 88px;
+    box-sizing: border-box;
+}
+
+.menu-add-dialog .avatar-preview-img {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--el-border-color);
+}
+
+/* 短剧封面竖图：与用户选图同一行，略增高以适配海报比例 */
+.menu-add-dialog .cover-preview-img {
+    width: 64px;
+    height: 88px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--el-border-color);
+}
+
+.menu-add-dialog .form-item-avatar.el-form-item {
+    align-items: center;
+}
+
+.menu-add-dialog .form-item-cover.el-form-item {
+    align-items: center;
+}
+
+.menu-add-dialog .form-item-avatar .el-form-item__label {
+    align-self: center;
+    height: auto;
+    line-height: 1.4;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.menu-add-dialog .form-item-cover .el-form-item__label {
+    align-self: center;
+    height: auto;
+    line-height: 1.4;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.menu-add-dialog .form-item-avatar .el-form-item__content {
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+}
+
+.menu-add-dialog .form-item-cover .el-form-item__content {
+    display: flex;
+    align-items: center;
+    min-height: 0;
+}
+
+/* 表单项：标签与内容区垂直居中；剧情简介为多行文本域，标签保持顶对齐 */
+.menu-add-dialog .add-form-menu.el-form .el-form-item:not(.form-item-description) {
+    align-items: center;
+}
+
+.menu-add-dialog .add-form-menu.el-form .el-form-item:not(.form-item-description) .el-form-item__label {
+    align-self: center;
+}
+
+.menu-add-dialog .add-form-menu.el-form .el-form-item.form-item-description {
+    align-items: flex-start;
+}
+
+.menu-add-dialog .add-form-menu.el-form .el-form-item.form-item-description .el-form-item__label {
+    align-self: flex-start;
+    padding-top: 8px;
+    line-height: 1.4;
+}

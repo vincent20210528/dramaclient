@@ -1,0 +1,291 @@
+* {
+	margin: 0;
+	padding: 0;
+	outline: 0 !important;
+}
+
+
+body {
+	font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, 'microsoft yahei', arial, STHeiTi, sans-serif;
+}
+
+a {
+	text-decoration: none;
+}
+i {
+	font-style: normal;
+}
+
+.container {
+	padding: 30px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+.el-table th {
+	background-color: #f5f7fa !important;
+}
+
+.plugins-tips {
+	padding: 20px 10px;
+	margin-bottom: 20px;
+	background: #eef1f6;
+}
+
+.plugins-tips a {
+	color: var(--el-color-primary);
+}
+
+.el-button + .el-tooltip {
+	margin-left: 10px;
+}
+
+.mgb20 {
+	margin-bottom: 20px;
+}
+.mgb10 {
+	margin-bottom: 10px;
+}
+.mr10 {
+	margin-right: 10px;
+}
+
+.move-enter-active,
+.move-leave-active {
+	transition: opacity 0.1s ease;
+}
+
+.move-enter-from,
+.move-leave-to {
+	opacity: 0;
+}
+
+.el-time-panel__content::after,
+.el-time-panel__content::before {
+	margin-top: -7px;
+}
+
+.el-time-spinner__wrapper .el-scrollbar__wrap:not(.el-scrollbar__wrap--hidden-default) {
+	padding-bottom: 0;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+.flex-center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+:root {
+	--header-bg-color: #2E5CF6;
+	--header-text-color: #fff;
+	--active-color: var(--el-color-primary);
+}
+
+/* 修复 Element Plus 消息提示定位问题 */
+.el-message {
+	position: fixed !important;
+	top: 20px !important;
+	left: 50% !important;
+	transform: translateX(-50%) !important;
+	z-index: 3000 !important;
+}
+
+.el-notification {
+	position: fixed !important;
+	top: 20px !important;
+	right: 20px !important;
+	z-index: 3000 !important;
+}
+
+/* ---------- 列表底部分页（与表格配套，layout 使用 total, sizes, ->, prev, pager, next, jumper） ---------- */
+.pagination-wrapper,
+.message-pagination {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	flex-wrap: wrap;
+	gap: 12px;
+	box-sizing: border-box;
+}
+
+.pagination-wrapper {
+	padding: 16px 0 0;
+}
+
+.message-pagination {
+	padding: 12px 0 0;
+}
+
+.pagination-wrapper .el-pagination,
+.message-pagination .el-pagination {
+	flex: 1;
+	min-width: 0;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	row-gap: 8px;
+}
+
+.pagination-wrapper .el-pagination__total,
+.message-pagination .el-pagination__total {
+	margin-left: 0 !important;
+	color: #606266;
+	font-size: 14px;
+}
+
+.pagination-wrapper .el-pagination__sizes,
+.message-pagination .el-pagination__sizes {
+	margin-left: 12px !important;
+}
+
+.pagination-wrapper .el-pagination__sizes .el-select,
+.message-pagination .el-pagination__sizes .el-select {
+	width: auto;
+	min-width: 108px;
+}
+
+.pagination-wrapper .el-pagination__sizes .el-select .el-select__wrapper,
+.message-pagination .el-pagination__sizes .el-select .el-select__wrapper {
+	min-height: 40px;
+	padding: 0 12px;
+	background-color: #edf1fc !important;
+	border-radius: 10px;
+	box-shadow: none !important;
+}
+
+.pagination-wrapper .el-pagination__sizes .el-select .el-select__wrapper:hover,
+.pagination-wrapper .el-pagination__sizes .el-select .el-select__wrapper.is-focused,
+.message-pagination .el-pagination__sizes .el-select .el-select__wrapper:hover,
+.message-pagination .el-pagination__sizes .el-select .el-select__wrapper.is-focused {
+	box-shadow: none !important;
+}
+
+.pagination-wrapper .el-pagination__rightwrapper,
+.message-pagination .el-pagination__rightwrapper {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+/* 页码列表：数字之间 5px 间距 */
+.pagination-wrapper .el-pagination .el-pager,
+.message-pagination .el-pagination .el-pager {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 5px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	vertical-align: middle;
+}
+
+/* 上一页 / 下一页（约为原 80%） */
+.pagination-wrapper .el-pagination .btn-prev,
+.pagination-wrapper .el-pagination .btn-next,
+.message-pagination .el-pagination .btn-prev,
+.message-pagination .el-pagination .btn-next {
+	background-color: #ffffff !important;
+	border: 1px solid #e4e7ed !important;
+	border-radius: 8px !important;
+	color: #000000 !important;
+	font-size: 14px !important;
+	line-height: 21px !important;
+	padding: 6px 12px !important;
+	min-width: auto !important;
+	height: auto !important;
+	box-sizing: border-box !important;
+}
+
+.pagination-wrapper .el-pagination .btn-prev:disabled,
+.pagination-wrapper .el-pagination .btn-next:disabled,
+.message-pagination .el-pagination .btn-prev:disabled,
+.message-pagination .el-pagination .btn-next:disabled {
+	color: #c0c4cc !important;
+	background-color: #f5f7fa !important;
+	border-color: #ebeef5 !important;
+	opacity: 1;
+}
+
+/* 中间页码：约 33×33（约为原 80%） */
+.pagination-wrapper .el-pagination .el-pager li,
+.message-pagination .el-pagination .el-pager li {
+	min-width: 33px;
+	height: 33px;
+	line-height: 33px !important;
+	padding: 0 5px;
+	font-size: 14px;
+	font-weight: 500;
+	border-radius: 6px;
+	background-color: #ffffff !important;
+	border: 1px solid #e4e7ed !important;
+	color: #000000 !important;
+	box-sizing: border-box;
+}
+
+.pagination-wrapper .el-pagination .el-pager li.is-active,
+.message-pagination .el-pagination .el-pager li.is-active {
+	width: 33px;
+	min-width: 33px;
+	padding: 0;
+	background-color: #2d53eb !important;
+	border-color: #2d53eb !important;
+	color: #ffffff !important;
+	font-size: 14px;
+	line-height: 33px !important;
+	font-weight: 500;
+	cursor: default;
+}
+
+.pagination-wrapper .el-pagination .el-pager li.more,
+.message-pagination .el-pagination .el-pager li.more {
+	background: transparent !important;
+	border: none !important;
+	min-width: 26px;
+}
+
+/* 跳转至 x 页：可输入 */
+.pagination-wrapper .el-pagination__jump,
+.message-pagination .el-pagination__jump {
+	margin-left: 8px !important;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	color: #606266;
+}
+
+/* 宽度约为原 80%，保留两位页码可读 */
+.pagination-wrapper .el-pagination__jump .el-pagination__editor,
+.message-pagination .el-pagination__jump .el-pagination__editor {
+	width: 33px !important;
+	min-width: 33px;
+}
+
+.pagination-wrapper .el-pagination__jump .el-pagination__editor .el-input__wrapper,
+.message-pagination .el-pagination__jump .el-pagination__editor .el-input__wrapper {
+	min-height: 33px;
+	height: 33px;
+	padding: 0 3px;
+	border-radius: 6px;
+	box-shadow: 0 0 0 1px #dcdfe6 inset;
+	background-color: #ffffff !important;
+}
+
+.pagination-wrapper .el-pagination__jump .el-pagination__editor .el-input__inner,
+.message-pagination .el-pagination__jump .el-pagination__editor .el-input__inner {
+	height: 33px;
+	line-height: 33px;
+	font-size: 14px;
+	font-weight: 500;
+	color: #000000;
+	text-align: center;
+}

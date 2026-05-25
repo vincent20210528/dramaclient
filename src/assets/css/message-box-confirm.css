@@ -1,0 +1,108 @@
+/**
+ * ElMessageBox.confirm 定制样式（通过 customClass: 'app-confirm-dialog'）
+ * 表头 #edf1fc、正文白底、橙色警示图标、取消浅蓝灰 / 确定主色蓝
+ */
+
+.app-confirm-dialog.el-message-box {
+    padding: 0;
+    max-width: 480px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    background-color: #ffffff;
+}
+
+.app-confirm-dialog .el-message-box__header {
+    margin: 0;
+    padding: 10px 44px 10px 16px;
+    min-height: 44px;
+    box-sizing: border-box;
+    background-color: #edf1fc;
+    border-bottom: none;
+    position: relative;
+}
+
+.app-confirm-dialog .el-message-box__title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #303133;
+    line-height: 1.4;
+}
+
+.app-confirm-dialog .el-message-box__headerbtn {
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+}
+
+.app-confirm-dialog .el-message-box__headerbtn .el-message-box__close {
+    color: #909399;
+}
+
+.app-confirm-dialog .el-message-box__headerbtn:hover .el-message-box__close {
+    color: #606266;
+}
+
+.app-confirm-dialog .el-message-box__content {
+    padding: 20px 20px 4px;
+    background-color: #ffffff;
+}
+
+.app-confirm-dialog .el-message-box__container {
+    align-items: center;
+    gap: 10px;
+}
+
+.app-confirm-dialog .el-message-box__status {
+    font-size: 22px;
+}
+
+.app-confirm-dialog .el-message-box__status.el-message-box-icon--warning {
+    color: #ff9900 !important;
+}
+
+.app-confirm-dialog .el-message-box__message {
+    padding: 0;
+}
+
+.app-confirm-dialog .el-message-box__message p {
+    font-size: 15px;
+    color: #303133;
+    line-height: 1.5;
+}
+
+.app-confirm-dialog .el-message-box__btns {
+    padding: 16px 20px 20px;
+    gap: 12px;
+}
+
+.app-confirm-dialog .el-message-box__btns .el-button {
+    min-width: 88px;
+    height: 40px;
+    border-radius: 10px;
+    padding: 0 18px;
+}
+
+.app-confirm-dialog .el-message-box__btns .el-button:not(.el-button--primary) {
+    background-color: #edf1fc;
+    border-color: #d8e0f5;
+    color: #303133;
+}
+
+.app-confirm-dialog .el-message-box__btns .el-button:not(.el-button--primary):hover {
+    background-color: #e0e8f8;
+    border-color: #d8e0f5;
+    color: #303133;
+}
+
+.app-confirm-dialog .el-message-box__btns .el-button--primary {
+    background-color: #1c53d9;
+    border-color: #1c53d9;
+}
+
+.app-confirm-dialog .el-message-box__btns .el-button--primary:hover {
+    background-color: #1748c4;
+    border-color: #1748c4;
+}

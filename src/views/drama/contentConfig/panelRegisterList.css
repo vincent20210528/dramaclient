@@ -1,0 +1,237 @@
+/* 与注册管理列表页：筛选区、查询/重置/新增按钮、表格、刷新、分页（供内容配置各 Tab 面板复用） */
+.panel-register-wrap .filter-card {
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: 0;
+    overflow: visible;
+    padding: 0;
+    box-sizing: border-box;
+}
+.panel-register-wrap .search-form {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+}
+.panel-register-wrap .search-form .el-form-item {
+    margin-bottom: 0;
+    margin-right: 0;
+}
+.panel-register-wrap .filter-input {
+    width: 200px;
+}
+.panel-register-wrap .filter-card .filter-input .el-input__wrapper {
+    width: 200px;
+    min-height: 34px;
+    padding: 0 10px;
+    background-color: #edf1fc;
+    border-radius: 8px;
+    box-shadow: none;
+    border: none;
+}
+.panel-register-wrap .filter-card .filter-input .el-input__wrapper:hover,
+.panel-register-wrap .filter-card .filter-input .el-input__wrapper.is-focus {
+    box-shadow: none;
+}
+.panel-register-wrap .filter-card .filter-input .el-input__inner {
+    height: 34px;
+    line-height: 34px;
+    font-size: 12px;
+    color: #303133;
+}
+.panel-register-wrap .filter-select {
+    width: 200px;
+}
+.panel-register-wrap .filter-card .filter-select .el-select__wrapper {
+    min-height: 34px;
+    padding: 0 10px;
+    background-color: #edf1fc;
+    border-radius: 8px;
+    box-shadow: none !important;
+    font-size: 12px;
+}
+.panel-register-wrap .filter-card .filter-select .el-select__wrapper:hover,
+.panel-register-wrap .filter-card .filter-select .el-select__wrapper.is-focused {
+    box-shadow: none !important;
+}
+.panel-register-wrap .search-form__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.panel-register-wrap .search-form__add {
+    margin-left: auto;
+}
+.panel-register-wrap .btn-query {
+    min-width: 64px;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    background-color: #2d53eb;
+    border-color: #2d53eb;
+}
+.panel-register-wrap .btn-query:hover,
+.panel-register-wrap .btn-query:focus {
+    background-color: #2447d4;
+    border-color: #2447d4;
+}
+.panel-register-wrap .btn-reset {
+    min-width: 64px;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    background-color: #eef1fe;
+    border: 1px solid #2d53eb;
+    color: #2d53eb;
+}
+.panel-register-wrap .btn-reset:hover,
+.panel-register-wrap .btn-reset:focus {
+    background-color: #e4e9fc;
+    border-color: #2d53eb;
+    color: #2d53eb;
+}
+.panel-register-wrap .btn-add-app {
+    width: 120px;
+    height: 34px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background-color: #2d53eb;
+    border-color: #2d53eb;
+}
+.panel-register-wrap .btn-add-app:hover,
+.panel-register-wrap .btn-add-app:focus {
+    background-color: #2447d4;
+    border-color: #2447d4;
+}
+.panel-register-wrap .table-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 12px 0 8px;
+    margin-top: 16px;
+}
+.panel-register-wrap .toolbar-actions {
+    display: flex;
+    gap: 12px;
+}
+.panel-register-wrap .toolbar-icon {
+    font-size: 18px;
+    color: #909399;
+    cursor: pointer;
+}
+.panel-register-wrap .toolbar-icon:hover {
+    color: #409eff;
+}
+.panel-register-wrap .register-table {
+    --el-table-border-color: #ebeef5;
+}
+.panel-register-wrap .register-table .el-table__fixed-right,
+.panel-register-wrap .register-table .el-table__fixed-left {
+    box-shadow: none !important;
+}
+.panel-register-wrap .register-table .el-table__inner-wrapper::before {
+    display: none;
+}
+.panel-register-wrap .register-table .el-table__cell {
+    border-right: none !important;
+    border-left: none !important;
+    border-top: none !important;
+}
+.panel-register-wrap .register-table thead th.el-table__cell,
+.panel-register-wrap .register-table tbody td.el-table__cell {
+    border-bottom: 1px solid #ebeef5 !important;
+}
+.panel-register-wrap .register-table .el-table__header-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+}
+.panel-register-wrap .register-table thead th.el-table__cell:first-child {
+    border-top-left-radius: 8px;
+}
+.panel-register-wrap .register-table thead th.el-table__cell:last-child {
+    border-top-right-radius: 8px;
+}
+.panel-register-wrap .register-table .el-table__header-wrapper th.el-table__cell {
+    background-color: #edf1fc !important;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    vertical-align: middle;
+    text-align: center !important;
+}
+.panel-register-wrap .register-table thead th.el-table__cell .cell {
+    white-space: nowrap;
+}
+.panel-register-wrap .register-table .el-table__header .cell {
+    font-size: 13px;
+    font-weight: 700;
+    color: #000000;
+    line-height: 18px;
+    text-align: center;
+}
+.panel-register-wrap .register-table .el-table__body td.el-table__cell {
+    text-align: center !important;
+}
+.panel-register-wrap .register-table .el-table__body .el-table__cell .cell {
+    font-size: 12px;
+    color: #575757;
+    line-height: 18px;
+    text-align: center;
+}
+/* 序号列（首列）：取消 EP 默认 ellipsis，避免数字显示为 ... */
+.panel-register-wrap .register-table .el-table__header-wrapper th.el-table__cell:first-child,
+.panel-register-wrap .register-table .el-table__body td.el-table__cell:first-child,
+.panel-register-wrap .register-table .el-table__fixed-left th.el-table__cell:first-child,
+.panel-register-wrap .register-table .el-table__fixed-left td.el-table__cell:first-child {
+    min-width: 88px;
+}
+.panel-register-wrap .register-table .el-table__header-wrapper th.el-table__cell:first-child .cell,
+.panel-register-wrap .register-table .el-table__body td.el-table__cell:first-child .cell,
+.panel-register-wrap .register-table .el-table__fixed-left th.el-table__cell:first-child .cell,
+.panel-register-wrap .register-table .el-table__fixed-left td.el-table__cell:first-child .cell {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+/* 版权来源 · 版权方编码列：取消 EP 默认 ellipsis（含 show-overflow-tooltip 内联宽度） */
+.panel-register-wrap .register-table th.register-col-copyright-code,
+.panel-register-wrap .register-table td.register-col-copyright-code {
+    min-width: 168px;
+}
+.panel-register-wrap .register-table th.register-col-copyright-code .cell,
+.panel-register-wrap .register-table td.register-col-copyright-code .cell {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+}
+.panel-register-wrap .register-table .el-table__body .el-button.is-link {
+    font-size: 12px;
+    line-height: 18px;
+}
+.panel-register-wrap .register-table th.el-table__fixed-right-patch {
+    background-color: #edf1fc;
+}
+.panel-register-wrap .register-table .el-table__body tr:hover > td.el-table__cell {
+    background-color: #fafafa !important;
+}
+.panel-register-wrap .pagination-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 12px 0 0;
+}
+.panel-register-wrap .pagination-wrapper .el-pagination {
+    font-size: 12px;
+    flex-wrap: wrap;
+    row-gap: 8px;
+}
+.panel-register-wrap .pagination-wrapper .el-pagination__total,
+.panel-register-wrap .pagination-wrapper .el-pagination__sizes {
+    font-size: 12px;
+}
