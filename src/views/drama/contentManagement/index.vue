@@ -1123,21 +1123,37 @@
 
             <!-- 批量添加短剧：多行录入 -->
             <el-dialog
+                v-if="batchAddDialogVisible"
                 v-model="batchAddDialogVisible"
                 title="批量添加短剧"
                 width="min(1580px, 98vw)"
                 align-center
-                destroy-on-close
                 append-to-body
                 :close-on-click-modal="false"
                 class="menu-add-dialog batch-add-drama-dialog"
-                @close="onBatchAddDialogClose"
+                @closed="onBatchAddDialogClose"
             >
+                <div class="batch-add-mode-switch">
+                    <el-radio-group v-model="batchAddMode" @change="onBatchAddModeChange">
+                        <el-radio-button value="normal">普通模式</el-radio-button>
+                        <el-radio-button value="youtube1">YouTube模式一</el-radio-button>
+                        <el-radio-button value="youtube2">YouTube模式二</el-radio-button>
+                    </el-radio-group>
+                </div>
                 <div class="batch-add-toolbar">
-                    <span class="batch-add-tip">简介、图片为选填；请先选字幕语言再选类型/情节标签。</span>
+                    <span class="batch-add-tip">
+                        <template v-if="batchAddMode === 'normal'">
+                            简介、图片为选填；请先选字幕语言再选类型/情节标签。
+                        </template>
+                        <template v-else>
+                            简介为选填；请先选字幕语言再选类型/情节标签。
+                            <template v-if="batchAddMode === 'youtube1'">YouTube 模式一需在每行填写播放列表链接。</template>
+                        </template>
+                    </span>
                 </div>
                 <div class="batch-add-table-wrap">
                     <el-table
+                        :key="batchAddMode"
                         ref="batchAddTableRef"
                         :data="batchAddRows"
                         border
@@ -1185,7 +1201,18 @@
                                 />
                             </template>
                         </el-table-column>
-                        <el-table-column label="图片" min-width="128" align="left">
+                        <el-table-column v-if="batchAddMode === 'youtube1'" label="播放列表链接" min-width="280">
+                            <template #default="{ row }">
+                                <el-input
+                                    v-model="row.playlistUrl"
+                                    class="batch-add-plain-field"
+                                    placeholder="YouTube 播放列表 URL（必填）"
+                                    clearable
+                                    size="small"
+                                />
+                            </template>
+                        </el-table-column>
+                        <el-table-column v-if="batchAddMode === 'normal'" label="图片" min-width="128" align="left">
                             <template #default="{ row }">
                                 <div class="batch-cover-inline">
                                     <el-upload
@@ -1309,7 +1336,7 @@
                                 </el-select>
                             </template>
                         </el-table-column>
-                        <el-table-column label="剧集" width="88" align="center">
+                        <el-table-column v-if="batchAddMode === 'normal'" label="剧集" width="88" align="center">
                             <template #default="{ row }">
                                 <el-input-number
                                     v-model="row.dramaCount"
@@ -1662,10 +1689,12 @@ import {
 import {
     addDrama,
     batchAddDrama,
+    batchAddDramaForYouTube,
     deleteDrama,
     getDramaPage,
     type AddDramaParams,
     type BatchAddDramaItem,
+    type BatchAddDramaForYouTubeParams,
     editDramaPin,
     type UpdateDramaParams,
     updateDrama,
@@ -3586,6 +3615,8 @@ type BatchDramaRow = {
     title: string
     titleLanguage: string
     description: string
+    /** YouTube 模式一：每行独立的播放列表链接 */
+    playlistUrl: string
     coverRaw?: File
     coverPreview: string
     dramaCategories: string[]
@@ -3596,8 +3627,17 @@ type BatchDramaRow = {
     copyrightCode: string
 }
 
+type BatchAddMode = 'normal' | 'youtube1' | 'youtube2'
+
 const batchAddDialogVisible = ref(false)
-const batchAddRows = ref<BatchDramaRow[]>([])
+const batchAddMode = ref<BatchAddMode>('normal')
+const batchAddRowsByMode = ref<Record<BatchAddMode, BatchDramaRow[]>>({
+    normal: [],
+    youtube1: [],
+    youtube2: [],
+})
+/** 当前模式下的表格行（各模式独立，切换 Tab 互不影响） */
+const batchAddRows = computed(() => batchAddRowsByMode.value[batchAddMode.value])
 const batchAddSubmitLoading = ref(false)
 /** 批量表格实例，用于新增行后滚到底部 */
 const batchAddTableRef = ref<{ $el?: HTMLElement; setScrollTop?: (top: number) => void } | null>(null)
@@ -3637,6 +3677,7 @@ function createEmptyBatchRow(): BatchDramaRow {
         title: '',
         titleLanguage: '',
         description: '',
+        playlistUrl: '',
         coverRaw: undefined,
         coverPreview: '',
         dramaCategories: [],
@@ -3646,6 +3687,20 @@ function createEmptyBatchRow(): BatchDramaRow {
         dramaCount: 1,
         copyrightCode: copyrightOwnerOptions.value[0]?.value ?? '',
     }
+}
+
+function ensureBatchAddRowsForMode(mode: BatchAddMode | string | number) {
+    const key = mode as BatchAddMode
+    if (!batchAddRowsByMode.value[key]?.length) {
+        batchAddRowsByMode.value[key] = [createEmptyBatchRow()]
+    }
+}
+
+async function onBatchAddModeChange(mode: BatchAddMode | string | number) {
+    ensureBatchAddRowsForMode(mode)
+    await nextTick()
+    const table = batchAddTableRef.value as { doLayout?: () => void } | null
+    table?.doLayout?.()
 }
 
 function revokeBatchRowCover(row: BatchDramaRow) {
@@ -3658,9 +3713,12 @@ function revokeBatchRowCover(row: BatchDramaRow) {
 
 /** 清空批量草稿（释放封面 blob）；仅在「提交全部」全部成功时调用 */
 function resetBatchAddDialog() {
-    batchAddRows.value.forEach((r) => revokeBatchRowCover(r))
-    batchAddRows.value = []
+    for (const mode of ['normal', 'youtube1', 'youtube2'] as BatchAddMode[]) {
+        batchAddRowsByMode.value[mode].forEach((r) => revokeBatchRowCover(r))
+        batchAddRowsByMode.value[mode] = []
+    }
     batchAddSubmitLoading.value = false
+    batchAddMode.value = 'normal'
 }
 
 /** 取消/关窗：保留表格草稿，便于误关后再次打开继续编辑 */
@@ -3669,21 +3727,20 @@ function onBatchAddDialogClose() {
 }
 
 function openBatchAddDialog() {
-    if (!batchAddRows.value.length) {
-        batchAddRows.value = [createEmptyBatchRow()]
-    }
+    ensureBatchAddRowsForMode(batchAddMode.value)
     batchAddDialogVisible.value = true
 }
 
 function appendBatchAddRow() {
-    batchAddRows.value.push(createEmptyBatchRow())
+    batchAddRowsByMode.value[batchAddMode.value].push(createEmptyBatchRow())
     void scrollBatchAddTableToBottom()
 }
 
 function removeBatchAddRow(index: number) {
-    const row = batchAddRows.value[index]
+    const rows = batchAddRowsByMode.value[batchAddMode.value]
+    const row = rows[index]
     if (row) revokeBatchRowCover(row)
-    batchAddRows.value.splice(index, 1)
+    rows.splice(index, 1)
 }
 
 function onBatchRowLanguageChange(row: BatchDramaRow) {
@@ -3738,12 +3795,10 @@ function buildBatchCategoryCodesString(selectedValues: string[], languageCode: s
         .join(',')
 }
 
-async function submitBatchAdd() {
-    const rows = batchAddRows.value
-    if (!rows.length) {
-        ElMessage.warning('请至少添加一行')
-        return
-    }
+function collectBatchAddRowErrors(
+    rows: BatchDramaRow[],
+    options?: { skipDramaCount?: boolean; requirePlaylistUrl?: boolean },
+): string[] {
     const errors: string[] = []
     rows.forEach((row, i) => {
         const line = `第${i + 1}行`
@@ -3752,40 +3807,55 @@ async function submitBatchAdd() {
         if (!String(row.languageCode ?? '').trim()) errors.push(`${line}：请选择字幕语言`)
         if (!String(row.subtitleLanguageCode ?? '').trim()) errors.push(`${line}：请选择配音语言`)
         if (!row.dramaCategories?.length) errors.push(`${line}：请至少选择一个类型标签`)
-        if (typeof row.dramaCount !== 'number' || row.dramaCount < 1 || row.dramaCount > 9999) {
+        if (options?.requirePlaylistUrl && !String(row.playlistUrl ?? '').trim()) {
+            errors.push(`${line}：请填写播放列表链接`)
+        }
+        if (
+            !options?.skipDramaCount &&
+            (typeof row.dramaCount !== 'number' || row.dramaCount < 1 || row.dramaCount > 9999)
+        ) {
             errors.push(`${line}：剧集数需在 1-9999`)
         }
         if (!String(row.copyrightCode ?? '').trim()) errors.push(`${line}：请选择版权方`)
     })
-    if (errors.length) {
-        ElMessage.error(errors[0])
-        return
+    return errors
+}
+
+function finishBatchAddSubmit(ok: number, total: number, failMsgs: string[]) {
+    if (ok === total) {
+        ElMessage.success(`已全部添加成功（${ok} 条）`)
+        batchAddDialogVisible.value = false
+        resetBatchAddDialog()
+        loadList()
+    } else if (ok > 0) {
+        ElMessage.warning(`部分成功：成功 ${ok} 条，失败 ${failMsgs.length} 条`)
+        if (failMsgs.length) console.warn('批量添加失败明细', failMsgs)
+        loadList()
+    } else {
+        ElMessage.error(failMsgs[0] ?? '全部添加失败')
     }
-    batchAddSubmitLoading.value = true
-    let ok = 0
+}
+
+async function submitBatchAddNormal(rows: BatchDramaRow[]) {
+    const preparedRows: Array<{ lineLabel: string; payload: BatchAddDramaItem }> = []
     const failMsgs: string[] = []
-    try {
-        const preparedRows: Array<{ lineLabel: string; payload: BatchAddDramaItem }> = []
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i]
-            const lineLabel = `第${i + 1}行`
-            let coverImgUrl = ''
-            try {
-                if (row.coverRaw) {
-                    coverImgUrl = await uploadByPut(row.coverRaw, 'drama/cover')
-                }
-            } catch (e: any) {
-                failMsgs.push(`${lineLabel}：封面上传失败 ${e?.message ?? ''}`)
-                continue
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        const lineLabel = `第${i + 1}行`
+        let coverImgUrl = ''
+        try {
+            if (row.coverRaw) {
+                coverImgUrl = await uploadByPut(row.coverRaw, 'drama/cover')
             }
-            const dramaCategoriesCodes = buildBatchCategoryCodesString(
-                row.dramaCategories,
-                row.languageCode,
-            )
-            const dramaTagsCodesStr = Array.isArray(row.dramaTags)
-                ? row.dramaTags.filter(Boolean).join(',')
-                : ''
-            const payload: BatchAddDramaItem = {
+        } catch (e: any) {
+            failMsgs.push(`${lineLabel}：封面上传失败 ${e?.message ?? ''}`)
+            continue
+        }
+        const dramaCategoriesCodes = buildBatchCategoryCodesString(row.dramaCategories, row.languageCode)
+        const dramaTagsCodesStr = Array.isArray(row.dramaTags) ? row.dramaTags.filter(Boolean).join(',') : ''
+        preparedRows.push({
+            lineLabel,
+            payload: {
                 languageCode: row.languageCode,
                 title: row.title.trim(),
                 titleLanguage: row.titleLanguage.trim(),
@@ -3796,39 +3866,99 @@ async function submitBatchAdd() {
                 dramaTagsCodes: dramaTagsCodesStr,
                 dramaCategoriesCodes: dramaCategoriesCodes || '',
                 subtitleLanguageCode: row.subtitleLanguageCode,
-            }
-            preparedRows.push({ lineLabel, payload })
-        }
+            },
+        })
+    }
 
-        const BATCH_SIZE = 50
-        for (let start = 0; start < preparedRows.length; start += BATCH_SIZE) {
-            const chunkRows = preparedRows.slice(start, start + BATCH_SIZE)
-            const chunkPayload = chunkRows.map((item) => item.payload)
-            try {
-                const addRes = await batchAddDrama(chunkPayload)
-                const data = addRes.data
-                if (Number(data?.code) === 200) {
-                    ok += chunkRows.length
-                } else {
-                    const msg = data?.message ?? '批量新增失败'
-                    chunkRows.forEach((item) => failMsgs.push(`${item.lineLabel}：${msg}`))
-                }
-            } catch (e: any) {
-                const msg = e?.response?.data?.message ?? e?.message ?? '请求失败'
+    let ok = 0
+    const BATCH_SIZE = 50
+    for (let start = 0; start < preparedRows.length; start += BATCH_SIZE) {
+        const chunkRows = preparedRows.slice(start, start + BATCH_SIZE)
+        const chunkPayload = chunkRows.map((item) => item.payload)
+        try {
+            const addRes = await batchAddDrama(chunkPayload)
+            const data = addRes.data
+            if (Number(data?.code) === 200) {
+                ok += chunkRows.length
+            } else {
+                const msg = data?.message ?? '批量新增失败'
                 chunkRows.forEach((item) => failMsgs.push(`${item.lineLabel}：${msg}`))
             }
+        } catch (e: any) {
+            const msg = e?.response?.data?.message ?? e?.message ?? '请求失败'
+            chunkRows.forEach((item) => failMsgs.push(`${item.lineLabel}：${msg}`))
         }
-        if (ok === rows.length) {
-            ElMessage.success(`已全部添加成功（${ok} 条）`)
-            batchAddDialogVisible.value = false
-            resetBatchAddDialog()
-            loadList()
-        } else if (ok > 0) {
-            ElMessage.warning(`部分成功：成功 ${ok} 条，失败 ${failMsgs.length} 条`)
-            if (failMsgs.length) console.warn('批量添加失败明细', failMsgs)
-            loadList()
+    }
+    finishBatchAddSubmit(ok, rows.length, failMsgs)
+}
+
+async function submitBatchAddYouTube(rows: BatchDramaRow[], mode: 1 | 2) {
+    let ok = 0
+    const failMsgs: string[] = []
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        const lineLabel = `第${i + 1}行`
+        const dramaCategoriesCodes = buildBatchCategoryCodesString(row.dramaCategories, row.languageCode)
+        const dramaTagsCodesStr = Array.isArray(row.dramaTags) ? row.dramaTags.filter(Boolean).join(',') : ''
+        const payload: BatchAddDramaForYouTubeParams = {
+            mode,
+            dramasInfo: {
+                languageCode: row.languageCode,
+                title: row.title.trim(),
+                titleLanguage: row.titleLanguage.trim(),
+                description: (row.description ?? '').trim(),
+                sex: 2,
+                copyrightCode: row.copyrightCode,
+                status: 1,
+                seriesStatus: 1,
+                dramaCategoriesCodes: dramaCategoriesCodes || '',
+                dramaTagsCodes: dramaTagsCodesStr,
+                subtitleLanguageCode: row.subtitleLanguageCode,
+                pin: 1,
+            },
+        }
+        if (mode === 1) {
+            payload.playlistUrl = String(row.playlistUrl ?? '').trim()
+        }
+        try {
+            const addRes = await batchAddDramaForYouTube(payload)
+            const data = addRes.data
+            if (Number(data?.code) === 200) {
+                ok += 1
+            } else {
+                failMsgs.push(`${lineLabel}：${data?.message ?? '批量新增失败'}`)
+            }
+        } catch (e: any) {
+            const msg = e?.response?.data?.message ?? e?.message ?? '请求失败'
+            failMsgs.push(`${lineLabel}：${msg}`)
+        }
+    }
+    finishBatchAddSubmit(ok, rows.length, failMsgs)
+}
+
+async function submitBatchAdd() {
+    const rows = batchAddRows.value
+    if (!rows.length) {
+        ElMessage.warning('请至少添加一行')
+        return
+    }
+    const isYouTubeMode = batchAddMode.value !== 'normal'
+    const errors = collectBatchAddRowErrors(rows, {
+        skipDramaCount: isYouTubeMode,
+        requirePlaylistUrl: batchAddMode.value === 'youtube1',
+    })
+    if (errors.length) {
+        ElMessage.error(errors[0])
+        return
+    }
+    batchAddSubmitLoading.value = true
+    try {
+        if (batchAddMode.value === 'normal') {
+            await submitBatchAddNormal(rows)
+        } else if (batchAddMode.value === 'youtube1') {
+            await submitBatchAddYouTube(rows, 1)
         } else {
-            ElMessage.error(failMsgs[0] ?? '全部添加失败')
+            await submitBatchAddYouTube(rows, 2)
         }
     } finally {
         batchAddSubmitLoading.value = false
@@ -4051,6 +4181,9 @@ onBeforeUnmount(() => {
     font-size: 12px;
 }
 
+.batch-add-mode-switch {
+    margin-bottom: 12px;
+}
 .batch-add-toolbar {
     margin-bottom: 8px;
 }

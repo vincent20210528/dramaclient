@@ -131,6 +131,44 @@ export function batchAddDrama(
     })
 }
 
+/** YouTube 批量添加短剧 dramasInfo 入参 POST /api/apps/dramasInfo/batchAddDramaForYouTube */
+export interface BatchAddDramaForYouTubeDramasInfo {
+    languageCode: string
+    title: string
+    titleLanguage: string
+    description: string
+    sex: number
+    copyrightCode: string
+    status: number
+    seriesStatus: number
+    dramaCategoriesCodes: string
+    dramaTagsCodes: string
+    subtitleLanguageCode: string
+    pin: number
+}
+
+/** YouTube 批量添加短剧入参（mode 1 需 playlistUrl） */
+export interface BatchAddDramaForYouTubeParams {
+    mode: 1 | 2
+    playlistUrl?: string
+    dramasInfo: BatchAddDramaForYouTubeDramasInfo
+}
+
+/**
+ * YouTube 批量添加短剧（POST）
+ * @returns axios 响应，接口 body 在 res.data 中
+ */
+export function batchAddDramaForYouTube(
+    data: BatchAddDramaForYouTubeParams,
+): Promise<AxiosResponse<BatchAddDramaResponse>> {
+    return request({
+        url: '/api/apps/dramasInfo/batchAddDramaForYouTube',
+        method: 'post',
+        data,
+        headers: { 'Content-Type': 'application/json' },
+    })
+}
+
 // ========== 编辑短剧 ==========
 
 /** 编辑短剧接口入参（与后端 /api/apps/dramasInfo/update 一致） */
