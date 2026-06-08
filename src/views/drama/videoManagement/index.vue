@@ -76,6 +76,18 @@
                         </el-select>
                     </el-form-item>
 
+                    <el-form-item>
+                        <el-select
+                            v-model="searchForm.hasYoutubeIdFilter"
+                            class="filter-select filter-select--yvid"
+                            placeholder="YVID"
+                        >
+                            <el-option label="全部" value="" />
+                            <el-option label="有YVID" value="has" />
+                            <el-option label="无YVID" value="none" />
+                        </el-select>
+                    </el-form-item>
+
                     <el-form-item class="search-form__actions">
                         <el-button class="btn-query" type="primary" @click="handleSearch">查询</el-button>
                         <el-button class="btn-reset" @click="handleReset">重置</el-button>
@@ -85,6 +97,22 @@
                 <div class="table-toolbar">
                     <span class="toolbar-actions">
                         <el-icon class="toolbar-icon" @click="loadList"><Refresh /></el-icon>
+                        <el-dropdown trigger="click" :hide-on-click="false">
+                            <el-icon class="toolbar-icon"><Setting /></el-icon>
+                            <template #dropdown>
+                                <el-dropdown-menu class="table-column-setting">
+                                    <div class="video-mgmt-col-setting-panel">
+                                        <el-checkbox-group v-model="showColumnKeys">
+                                            <div class="video-mgmt-col-setting-list">
+                                                <el-checkbox value="seriesName">剧集名</el-checkbox>
+                                                <el-checkbox value="m3u8Url">播放地址(m3u8)</el-checkbox>
+                                                <el-checkbox value="updatedAt">更新时间</el-checkbox>
+                                            </div>
+                                        </el-checkbox-group>
+                                    </div>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
                     </span>
                 </div>
 
@@ -168,7 +196,13 @@
                             </template>
                         </el-table-column>
                         <el-table-column prop="seriesCount" label="第几集" width="60" align="center" />
-                        <el-table-column prop="seriesName" label="剧集名" min-width="84" align="center">
+                        <el-table-column
+                            v-if="showColumnKeys.includes('seriesName')"
+                            prop="seriesName"
+                            label="剧集名"
+                            min-width="84"
+                            align="center"
+                        >
                             <template #default="{ row }">
                                 <el-tooltip
                                     :content="String(row.seriesName ?? '')"
@@ -218,7 +252,39 @@
                             </template>
                         </el-table-column>
 
-                        <el-table-column label="播放地址(m3u8)" min-width="118" align="center">
+                        <el-table-column prop="youtubeId" label="YVID" min-width="96" align="center">
+                            <template #default="{ row }">
+                                <div class="copy-cell copy-cell--narrow">
+                                    <el-tooltip
+                                        :content="String(row.youtubeId ?? '')"
+                                        placement="top"
+                                        :show-after="200"
+                                        popper-class="video-mgmt-ellipsis-tooltip"
+                                        :disabled="!row.youtubeId || !isMiddleTruncated(String(row.youtubeId), 12)"
+                                    >
+                                        <span class="copy-text copy-text--vid">{{
+                                            row.youtubeId ? truncateMiddle(String(row.youtubeId), 12) : '—'
+                                        }}</span>
+                                    </el-tooltip>
+                                    <el-button
+                                        v-if="row.youtubeId"
+                                        type="primary"
+                                        link
+                                        size="small"
+                                        :icon="CopyDocument"
+                                        class="episode-item__copy"
+                                        @click.stop="copyYoutubeId(row)"
+                                    />
+                                </div>
+                            </template>
+                        </el-table-column>
+
+                        <el-table-column
+                            v-if="showColumnKeys.includes('m3u8Url')"
+                            label="播放地址(m3u8)"
+                            min-width="118"
+                            align="center"
+                        >
                             <template #default="{ row }">
                                 <div class="copy-cell copy-cell--url">
                                     <el-tooltip
@@ -269,7 +335,13 @@
                                 </el-tooltip>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="updatedAt" label="更新时间" min-width="122" align="center">
+                        <el-table-column
+                            v-if="showColumnKeys.includes('updatedAt')"
+                            prop="updatedAt"
+                            label="更新时间"
+                            min-width="122"
+                            align="center"
+                        >
                             <template #default="{ row }">
                                 <el-tooltip
                                     :content="String(row.updatedAt ?? '')"
@@ -308,7 +380,7 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { CopyDocument, Refresh } from '@element-plus/icons-vue'
+import { CopyDocument, Refresh, Setting } from '@element-plus/icons-vue'
 import { getSupportLanguagePage } from '@/api'
 import {
     getDramaSeriesInfoPage,
@@ -329,7 +401,12 @@ const searchForm = reactive({
     languageCode: '',
     handleStatus: '' as '' | -1 | 0 | 1 | 2,
     sortType: 0 as 0 | 1 | 2,
+    /** 全部不传 hasYoutubeId；有/无对应 true/false */
+    hasYoutubeIdFilter: '' as '' | 'has' | 'none',
 })
+
+/** 默认不展示：剧集名、m3u8、更新时间 */
+const showColumnKeys = ref<string[]>([])
 
 const languageOptionsLoading = ref(false)
 const languageOptions = ref<Array<{ languageCode: string; languageName: string; label: string }>>([])
@@ -365,6 +442,12 @@ const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
 
+function resolveHasYoutubeIdParam(): boolean | undefined {
+    if (searchForm.hasYoutubeIdFilter === 'has') return true
+    if (searchForm.hasYoutubeIdFilter === 'none') return false
+    return undefined
+}
+
 async function loadList() {
     loading.value = true
     try {
@@ -377,6 +460,7 @@ async function loadList() {
             languageCode: searchForm.languageCode,
             handleStatus: searchForm.handleStatus === '' ? undefined : searchForm.handleStatus,
             sortType: searchForm.sortType,
+            hasYoutubeId: resolveHasYoutubeIdParam(),
         })
         const body = res?.data ?? res
         const pageData = body?.data ?? body
@@ -403,6 +487,7 @@ function handleReset() {
     searchForm.languageCode = ''
     searchForm.handleStatus = ''
     searchForm.sortType = 0
+    searchForm.hasYoutubeIdFilter = ''
     currentPage.value = 1
     pageSize.value = 10
     void loadList()
@@ -485,6 +570,20 @@ async function copyVid(row: DramaSeriesInfoPageRecord) {
     try {
         await navigator.clipboard.writeText(row.vid)
         ElMessage.success('vid已复制')
+    } catch (e: any) {
+        ElMessage.error(e?.response?.data?.message ?? e?.message ?? '复制失败')
+    }
+}
+
+async function copyYoutubeId(row: DramaSeriesInfoPageRecord) {
+    const id = row.youtubeId != null ? String(row.youtubeId).trim() : ''
+    if (!id) {
+        ElMessage.error('YVID为空')
+        return
+    }
+    try {
+        await navigator.clipboard.writeText(id)
+        ElMessage.success('YVID已复制')
     } catch (e: any) {
         ElMessage.error(e?.response?.data?.message ?? e?.message ?? '复制失败')
     }
@@ -737,6 +836,21 @@ onMounted(async () => {
 }
 .filter-select--sort-type {
     width: 150px;
+}
+.filter-select--yvid {
+    width: 120px;
+}
+
+.video-mgmt-col-setting-panel {
+    width: 180px;
+    padding: 10px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+.video-mgmt-col-setting-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .btn-query {

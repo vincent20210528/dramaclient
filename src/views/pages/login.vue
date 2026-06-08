@@ -1,8 +1,14 @@
 <template>
     <div class="login-bg" :style="{ '--ui-scale': uiScale }">
+        <img
+            class="login-bg-svg"
+            src="@/assets/img/login-overseas-drama-bg.svg"
+            alt=""
+            aria-hidden="true"
+        />
         <div class="login-container">
             <div class="login-header">
-                <img class="login-icon" src="@/assets/img/logo_new.png" alt="HuntShorts" />
+                <img class="login-icon" src="@/assets/img/logo_240.webp" alt="HuntShorts" />
                 <div class="login-title">| 短剧管理平台</div>
             </div>
             <el-form :model="param" :rules="rules" ref="login" size="large">
@@ -247,8 +253,18 @@ tabs.clearTabs()
     width: 100%;
     height: 100vh;
     padding: 0 24px;
-    background: url('https://dramares.huntshorts.ai/imgs/login_bg.webp') center/cover no-repeat;
+    background: #0a1628;
     overflow: hidden;
+}
+
+.login-bg-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .features-list {
@@ -259,6 +275,7 @@ tabs.clearTabs()
     display: flex;
     gap: 28px;
     align-items: center;
+    z-index: 2;
 }
 
 .feature-item {

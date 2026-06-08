@@ -1,78 +1,182 @@
-<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
   <defs>
-    <linearGradient id="bgGrad" x1="120" y1="40" x2="1840" y2="980" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#0B1A3A"/>
-      <stop offset="0.55" stop-color="#1C2452"/>
-      <stop offset="1" stop-color="#2A1E46"/>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A1628"/>
+      <stop offset="0.45" stop-color="#121E42"/>
+      <stop offset="1" stop-color="#1A1440"/>
     </linearGradient>
-    <radialGradient id="glowA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(420 240) rotate(33) scale(620 320)">
-      <stop stop-color="#3AA0FF" stop-opacity="0.34"/>
-      <stop offset="1" stop-color="#3AA0FF" stop-opacity="0"/>
+    <radialGradient id="glowBlue" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(320 280) rotate(25) scale(700 400)">
+      <stop stop-color="#3B8CFF" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#3B8CFF" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="glowB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1360 860) rotate(-18) scale(560 320)">
-      <stop stop-color="#A970FF" stop-opacity="0.30"/>
-      <stop offset="1" stop-color="#A970FF" stop-opacity="0"/>
+    <radialGradient id="glowPurple" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1580 780) rotate(-20) scale(650 380)">
+      <stop stop-color="#9072FF" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#9072FF" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="lineGrad" x1="220" y1="180" x2="1710" y2="920" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#4CC7FF" stop-opacity="0.28"/>
-      <stop offset="1" stop-color="#B881FF" stop-opacity="0.22"/>
+    <radialGradient id="glowCenter" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(960 540) scale(500 300)">
+      <stop stop-color="#509BFF" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#509BFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#4CC7FF" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#B881FF" stop-opacity="0.3"/>
     </linearGradient>
+    <linearGradient id="phoneScreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1E3A6E"/>
+      <stop offset="1" stop-color="#0F1F3D"/>
+    </linearGradient>
+    <linearGradient id="playBtn" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#509BFF"/>
+      <stop offset="1" stop-color="#9072FF"/>
+    </linearGradient>
+    <linearGradient id="barGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop stop-color="#509BFF" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#697DFC" stop-opacity="0.15"/>
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
   </defs>
 
+  <!-- 背景层 -->
   <rect width="1920" height="1080" fill="url(#bgGrad)"/>
-  <rect width="1920" height="1080" fill="url(#glowA)"/>
-  <rect width="1920" height="1080" fill="url(#glowB)"/>
+  <rect width="1920" height="1080" fill="url(#glowBlue)"/>
+  <rect width="1920" height="1080" fill="url(#glowPurple)"/>
+  <rect width="1920" height="1080" fill="url(#glowCenter)"/>
 
-  <g opacity="0.46" stroke="url(#lineGrad)" stroke-width="2">
-    <path d="M160 840C370 700 520 760 730 610C920 475 1110 525 1360 370C1510 278 1650 280 1780 210"/>
-    <path d="M100 930C360 780 550 860 790 700C1020 548 1150 600 1400 470C1570 382 1710 390 1860 330"/>
-    <path d="M220 760C420 650 620 700 820 570C1030 434 1220 452 1430 340C1540 281 1680 282 1830 232"/>
+  <!-- 网格点阵 -->
+  <g opacity="0.12" fill="#6BB5FF">
+    <circle cx="120" cy="120" r="1.5"/><circle cx="240" cy="120" r="1.5"/><circle cx="360" cy="120" r="1.5"/>
+    <circle cx="480" cy="120" r="1.5"/><circle cx="600" cy="120" r="1.5"/><circle cx="720" cy="120" r="1.5"/>
+    <circle cx="1200" cy="120" r="1.5"/><circle cx="1320" cy="120" r="1.5"/><circle cx="1440" cy="120" r="1.5"/>
+    <circle cx="1560" cy="120" r="1.5"/><circle cx="1680" cy="120" r="1.5"/><circle cx="1800" cy="120" r="1.5"/>
+    <circle cx="120" cy="960" r="1.5"/><circle cx="240" cy="960" r="1.5"/><circle cx="360" cy="960" r="1.5"/>
+    <circle cx="1680" cy="960" r="1.5"/><circle cx="1800" cy="960" r="1.5"/>
   </g>
 
-  <g opacity="0.55" fill="#8ED3FF">
-    <circle cx="300" cy="820" r="3"/>
-    <circle cx="480" cy="740" r="2.5"/>
-    <circle cx="690" cy="640" r="3"/>
-    <circle cx="950" cy="530" r="2.5"/>
-    <circle cx="1210" cy="430" r="3"/>
-    <circle cx="1450" cy="330" r="2.5"/>
-    <circle cx="1680" cy="250" r="3"/>
+  <!-- 全球分发连线 -->
+  <g opacity="0.35" stroke="url(#lineGrad)" stroke-width="1.5" fill="none">
+    <path d="M280 520 C500 420, 700 380, 960 400 C1220 420, 1420 480, 1620 560"/>
+    <path d="M200 680 C450 580, 720 520, 960 540 C1200 560, 1480 620, 1720 720"/>
+    <path d="M340 360 C580 300, 780 280, 960 300 C1140 320, 1340 360, 1540 420"/>
   </g>
 
-  <g opacity="0.28">
-    <rect x="150" y="170" width="250" height="140" rx="14" stroke="#79C4FF"/>
-    <rect x="173" y="194" width="150" height="92" rx="10" stroke="#79C4FF" stroke-opacity="0.7"/>
-    <path d="M236 216L236 264L279 240L236 216Z" fill="#8BD1FF"/>
+  <!-- 分发节点 -->
+  <g opacity="0.55" fill="#7EC8FF">
+    <circle cx="280" cy="520" r="4"/><circle cx="580" cy="410" r="3"/><circle cx="820" cy="370" r="3.5"/>
+    <circle cx="1100" cy="400" r="3"/><circle cx="1360" cy="460" r="3.5"/><circle cx="1620" cy="560" r="4"/>
+    <circle cx="200" cy="680" r="3"/><circle cx="1720" cy="720" r="3"/>
   </g>
 
-  <g opacity="0.22">
-    <rect x="1320" y="180" width="280" height="156" rx="16" stroke="#B69CFF"/>
-    <rect x="1348" y="208" width="170" height="100" rx="10" stroke="#B69CFF" stroke-opacity="0.72"/>
-    <path d="M1423 231L1423 283L1470 257L1423 231Z" fill="#C1AAFF"/>
+  <!-- 左侧竖屏短剧手机 1 -->
+  <g opacity="0.32" transform="translate(100, 200)">
+    <rect x="0" y="0" width="130" height="260" rx="18" stroke="#6BB5FF" stroke-width="1.5" fill="none"/>
+    <rect x="10" y="14" width="110" height="210" rx="8" fill="url(#phoneScreen)"/>
+    <rect x="48" y="6" width="34" height="5" rx="2.5" fill="#3A5A8A" opacity="0.6"/>
+    <path d="M55 110 L55 148 L82 129 Z" fill="url(#playBtn)" opacity="0.85"/>
+    <rect x="18" y="190" width="74" height="4" rx="2" fill="#3A5A8A" opacity="0.5"/>
+    <rect x="18" y="190" width="48" height="4" rx="2" fill="#509BFF" opacity="0.7"/>
+    <rect x="18" y="200" width="50" height="3" rx="1.5" fill="#5DA8FF" opacity="0.4"/>
+    <rect x="18" y="208" width="35" height="3" rx="1.5" fill="#5DA8FF" opacity="0.3"/>
   </g>
 
-  <g opacity="0.27">
-    <rect x="1430" y="760" width="320" height="190" rx="18" stroke="#7ACDFF"/>
-    <path d="M1460 890H1720" stroke="#7ACDFF" stroke-width="1.5"/>
-    <path d="M1460 860H1660" stroke="#7ACDFF" stroke-width="1.5"/>
-    <path d="M1460 830H1700" stroke="#7ACDFF" stroke-width="1.5"/>
-    <path d="M1500 775V947" stroke="#7ACDFF" stroke-opacity="0.6"/>
-    <path d="M1570 775V947" stroke="#7ACDFF" stroke-opacity="0.6"/>
-    <path d="M1640 775V947" stroke="#7ACDFF" stroke-opacity="0.6"/>
+  <!-- 左侧竖屏短剧手机 2 -->
+  <g opacity="0.24" transform="translate(230, 320)">
+    <rect x="0" y="0" width="110" height="220" rx="16" stroke="#8B7CFF" stroke-width="1.5" fill="none"/>
+    <rect x="8" y="12" width="94" height="178" rx="7" fill="url(#phoneScreen)"/>
+    <path d="M46 88 L46 120 L70 104 Z" fill="url(#playBtn)" opacity="0.75"/>
+    <rect x="16" y="158" width="60" height="3" rx="1.5" fill="#509BFF" opacity="0.5"/>
+    <rect x="16" y="166" width="40" height="3" rx="1.5" fill="#88BFFC" opacity="0.35"/>
   </g>
 
-  <g opacity="0.16" fill="#E2D7FF">
-    <rect x="0" y="930" width="1920" height="150"/>
-    <rect x="80" y="870" width="120" height="210"/>
-    <rect x="230" y="820" width="110" height="260"/>
-    <rect x="370" y="760" width="130" height="320"/>
-    <rect x="540" y="800" width="98" height="280"/>
-    <rect x="690" y="720" width="140" height="360"/>
-    <rect x="860" y="770" width="110" height="310"/>
-    <rect x="1020" y="740" width="150" height="340"/>
-    <rect x="1210" y="810" width="115" height="270"/>
-    <rect x="1360" y="700" width="150" height="380"/>
-    <rect x="1560" y="780" width="115" height="300"/>
-    <rect x="1710" y="730" width="135" height="350"/>
+  <!-- 右侧竖屏短剧手机 1 -->
+  <g opacity="0.30" transform="translate(1580, 180)">
+    <rect x="0" y="0" width="140" height="280" rx="20" stroke="#7A9CFF" stroke-width="1.5" fill="none"/>
+    <rect x="11" y="15" width="118" height="226" rx="9" fill="url(#phoneScreen)"/>
+    <rect x="52" y="7" width="36" height="5" rx="2.5" fill="#3A5A8A" opacity="0.6"/>
+    <path d="M58 118 L58 158 L88 138 Z" fill="url(#playBtn)" opacity="0.85"/>
+    <rect x="20" y="200" width="80" height="4" rx="2" fill="#509BFF" opacity="0.6"/>
+    <rect x="20" y="210" width="55" height="3" rx="1.5" fill="#88BFFC" opacity="0.4"/>
+    <rect x="20" y="218" width="38" height="3" rx="1.5" fill="#88BFFC" opacity="0.3"/>
+    <!-- 字幕条 -->
+    <rect x="24" y="175" width="72" height="14" rx="3" fill="#000" opacity="0.35"/>
+    <rect x="30" y="180" width="60" height="4" rx="2" fill="#E8F4FF" opacity="0.5"/>
+  </g>
+
+  <!-- 右侧竖屏短剧手机 2 -->
+  <g opacity="0.22" transform="translate(1690, 400)">
+    <rect x="0" y="0" width="105" height="210" rx="15" stroke="#A88CFF" stroke-width="1.5" fill="none"/>
+    <rect x="8" y="11" width="89" height="170" rx="7" fill="url(#phoneScreen)"/>
+    <path d="M42 82 L42 112 L64 97 Z" fill="url(#playBtn)" opacity="0.7"/>
+    <rect x="15" y="150" width="55" height="3" rx="1.5" fill="#697DFC" opacity="0.45"/>
+  </g>
+
+  <!-- 地球/海外分发 -->
+  <g opacity="0.28" transform="translate(1380, 620)">
+    <circle cx="100" cy="100" r="90" stroke="#6BB5FF" stroke-width="1.5" fill="none"/>
+    <ellipse cx="100" cy="100" rx="90" ry="35" stroke="#6BB5FF" stroke-width="1" fill="none" opacity="0.6"/>
+    <ellipse cx="100" cy="100" rx="35" ry="90" stroke="#6BB5FF" stroke-width="1" fill="none" opacity="0.6"/>
+    <path d="M10 100 C40 70, 70 60, 100 55 C130 60, 160 70, 190 100" stroke="#8B7CFF" stroke-width="1" fill="none" opacity="0.5"/>
+    <path d="M10 100 C40 130, 70 140, 100 145 C130 140, 160 130, 190 100" stroke="#8B7CFF" stroke-width="1" fill="none" opacity="0.5"/>
+    <!-- 分发锚点 -->
+    <circle cx="55" cy="75" r="5" fill="#509BFF" opacity="0.6"/>
+    <circle cx="145" cy="85" r="4" fill="#9072FF" opacity="0.55"/>
+    <circle cx="100" cy="140" r="4.5" fill="#697DFC" opacity="0.5"/>
+    <circle cx="70" cy="120" r="3" fill="#7EC8FF" opacity="0.45"/>
+    <circle cx="130" cy="115" r="3" fill="#7EC8FF" opacity="0.45"/>
+  </g>
+
+  <!-- 数据统计面板 -->
+  <g opacity="0.25" transform="translate(120, 700)">
+    <rect x="0" y="0" width="260" height="160" rx="14" stroke="#6BB5FF" stroke-width="1.5" fill="none"/>
+    <rect x="20" y="30" width="30" height="100" rx="4" fill="url(#barGrad)"/>
+    <rect x="62" y="55" width="30" height="75" rx="4" fill="url(#barGrad)"/>
+    <rect x="104" y="40" width="30" height="90" rx="4" fill="url(#barGrad)"/>
+    <rect x="146" y="65" width="30" height="65" rx="4" fill="url(#barGrad)"/>
+    <rect x="188" y="25" width="30" height="105" rx="4" fill="url(#barGrad)"/>
+    <path d="M20 145 H220" stroke="#6BB5FF" stroke-width="1" opacity="0.5"/>
+    <rect x="20" y="18" width="80" height="6" rx="3" fill="#5DA8FF" opacity="0.4"/>
+  </g>
+
+  <!-- 内容接入图标 -->
+  <g opacity="0.26" transform="translate(260, 140)">
+    <rect x="0" y="0" width="200" height="120" rx="12" stroke="#79C4FF" stroke-width="1.5" fill="none"/>
+    <rect x="16" y="18" width="120" height="72" rx="8" stroke="#79C4FF" stroke-opacity="0.7" fill="none"/>
+    <path d="M66 38 L66 70 L92 54 Z" fill="#8BD1FF" opacity="0.8"/>
+    <path d="M148 40 L168 54 L148 68 Z" fill="#509BFF" opacity="0.5"/>
+    <rect x="148" y="82" width="36" height="4" rx="2" fill="#88BFFC" opacity="0.4"/>
+    <rect x="148" y="90" width="24" height="4" rx="2" fill="#88BFFC" opacity="0.3"/>
+  </g>
+
+  <!-- 底部城市剪影 -->
+  <g opacity="0.14" fill="#C8DCFF">
+    <rect x="0" y="940" width="1920" height="140"/>
+    <rect x="60" y="880" width="100" height="200"/>
+    <rect x="190" y="830" width="90" height="250"/>
+    <rect x="310" y="790" width="120" height="290"/>
+    <rect x="460" y="840" width="85" height="240"/>
+    <rect x="580" y="760" width="130" height="320"/>
+    <rect x="740" y="810" width="95" height="270"/>
+    <rect x="870" y="770" width="140" height="310"/>
+    <rect x="1040" y="820" width="100" height="260"/>
+    <rect x="1170" y="750" width="135" height="330"/>
+    <rect x="1330" y="800" width="105" height="280"/>
+    <rect x="1460" y="720" width="145" height="360"/>
+    <rect x="1630" y="790" width="100" height="290"/>
+    <rect x="1760" y="740" width="120" height="340"/>
+  </g>
+
+  <!-- 装饰光点 -->
+  <g opacity="0.4" fill="#A8D4FF" filter="url(#softGlow)">
+    <circle cx="480" cy="250" r="2"/>
+    <circle cx="1420" cy="300" r="2.5"/>
+    <circle cx="800" cy="180" r="1.5"/>
+    <circle cx="1150" cy="650" r="2"/>
+    <circle cx="400" cy="580" r="1.5"/>
+    <circle cx="1550" cy="520" r="2"/>
   </g>
 </svg>

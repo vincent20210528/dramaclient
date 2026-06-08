@@ -340,6 +340,8 @@ export interface DramaSeriesInfoPageRecord {
     title: string
     /** 字幕语言 */
     languageCode: string
+    /** YouTube 视频 ID（YVID） */
+    youtubeId?: string | null
 }
 
 /** 视频管理分页查询入参 */
@@ -353,6 +355,8 @@ export interface DramaSeriesInfoPageParams {
     handleStatus?: -1 | 0 | 1 | 2
     /** 0: 创建时间 1: 修改时间 2: 文件大小 */
     sortType?: 0 | 1 | 2
+    /** 是否有关联 YouTube ID；不传表示全部 */
+    hasYoutubeId?: boolean
 }
 
 /** 视频管理分页数据结构 */
@@ -396,6 +400,9 @@ export function getDramaSeriesInfoPage(
                 ? params.handleStatus
                 : '',
         sortType: params.sortType === 1 || params.sortType === 2 ? params.sortType : 0,
+    }
+    if (params.hasYoutubeId === true || params.hasYoutubeId === false) {
+        body.hasYoutubeId = params.hasYoutubeId
     }
 
     return request({

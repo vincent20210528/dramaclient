@@ -97,7 +97,7 @@ import { Bell } from '@element-plus/icons-vue'
 import { removeUserRoleId, stopTokenCheck, getUserInfo, clearUserData } from '../utils'
 import { useMessageStore } from '../store/message'
 import { logoutApi } from '../api'
-import logoNew from '@/assets/img/logo_new.png'
+import logoNew from '@/assets/img/logo_240.webp'
 
 const defaultAvatar = 'https://dramares.huntshorts.ai/imgs/img.jpg'
 const messageStore = useMessageStore()
