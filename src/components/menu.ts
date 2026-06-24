@@ -239,6 +239,28 @@ export const menuData: Menus[] = [
         ],
     },
     {
+        id: '11',
+        icon: 'Cpu',
+        index: '/game',
+        title: '游戏管理',
+        children: [
+            {
+                id: '11-1',
+                pid: '11',
+                icon: 'Grid',
+                index: '/game/categoryConfig',
+                title: '游戏分类配置',
+            },
+            {
+                id: '11-2',
+                pid: '11',
+                icon: 'Tickets',
+                index: '/game/resourceManagement',
+                title: '游戏资源管理',
+            },
+        ],
+    },
+    {
         id: '3',
         icon: 'Setting',
         index: '/system',

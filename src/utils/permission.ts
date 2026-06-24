@@ -183,3 +183,19 @@ export const PERM_SERVICE_PACKAGE_CONFIG = {
     edit: 'system:servicePackageConfig:edit',
     delete: 'system:servicePackageConfig:delete',
 } as const
+
+/** 游戏分类管理 */
+export const PERM_GAME_CAT = {
+    list: 'system:gameCat:list',
+    add: 'system:gameCat:add',
+    edit: 'system:gameCat:edit',
+    delete: 'system:gameCat:delete',
+} as const
+
+/** 游戏资源管理 */
+export const PERM_GAME = {
+    list: 'system:game:list',
+    add: 'system:game:add',
+    edit: 'system:game:edit',
+    delete: 'system:game:delete',
+} as const

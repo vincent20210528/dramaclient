@@ -122,6 +122,30 @@ const routes: RouteRecordRaw[] = [
                 component: () => import('../views/domain/management/index.vue'),
             },
             {
+                path: '/game/categoryConfig',
+                name: 'gameCategoryConfig',
+                meta: {
+                    title: '游戏分类配置',
+                    permiss: '11',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "gameCategoryConfig" */ '../views/game/categoryConfig/index.vue'
+                    ),
+            },
+            {
+                path: '/game/resourceManagement',
+                name: 'gameResourceManagement',
+                meta: {
+                    title: '游戏资源管理',
+                    permiss: '11',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "gameResourceManagement" */ '../views/game/resourceManagement/index.vue'
+                    ),
+            },
+            {
                 path: '/system/userManagement',
                 name: 'userManagement',
                 meta: {
