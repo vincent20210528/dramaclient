@@ -214,7 +214,10 @@ export async function uploadGameFile(file: File, fileType: GameFileType): Promis
         throw new Error(res?.data?.message ?? '获取上传地址失败')
     }
     await axios.put(data.preSignedUrl, file, {
-        headers: { 'Content-Type': fileContentType },
+        headers: {
+            'Content-Type': fileContentType,
+            'x-cos-acl': 'public-read',
+        },
     })
     return data.fileUrl
 }

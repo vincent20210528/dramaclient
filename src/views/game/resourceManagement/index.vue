@@ -80,11 +80,10 @@
                         </span>
                     </div>
 
-                    <el-table class="register-table" :data="tableData" v-loading="loading" style="width: 100%">
-                        <el-table-column type="index" label="序号" width="70" align="center" :index="indexMethod" />
-                        <el-table-column prop="gameId" label="游戏ID" width="110" align="center" show-overflow-tooltip />
-                        <el-table-column prop="gameName" label="游戏名称" min-width="140" align="center" show-overflow-tooltip />
-                        <el-table-column label="图标" width="80" align="center">
+                    <el-table class="register-table game-resource-table" :data="tableData" v-loading="loading" style="width: 100%">
+                        <el-table-column prop="gameId" label="游戏ID" min-width="96" align="center" />
+                        <el-table-column prop="gameName" label="游戏名称" min-width="120" align="center" />
+                        <el-table-column label="图标" width="72" align="center">
                             <template #default="{ row }">
                                 <el-image
                                     v-if="row.iconUrl"
@@ -97,23 +96,23 @@
                                 <span v-else class="text-muted">—</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="分类" min-width="120" align="center" show-overflow-tooltip>
+                        <el-table-column label="分类" min-width="100" align="center">
                             <template #default="{ row }">
                                 {{ getCategoryName(row.categoryCode) }}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="languageCode" label="语言" width="90" align="center" />
-                        <el-table-column label="状态" width="90" align="center">
+                        <el-table-column prop="languageCode" label="语言" min-width="72" align="center" />
+                        <el-table-column label="状态" width="88" align="center">
                             <template #default="{ row }">
                                 <span :class="['status-pill', row.status === 1 ? 'status-pill--ok' : 'status-pill--off']">
                                     {{ row.status === 1 ? '上线' : '下线' }}
                                 </span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="rating" label="评分" width="70" align="center" />
-                        <el-table-column prop="downloadCount" label="下载量" width="90" align="center" />
-                        <el-table-column prop="version" label="版本" width="70" align="center" />
-                        <el-table-column label="横竖屏" width="80" align="center">
+                        <el-table-column prop="rating" label="评分" width="64" align="center" />
+                        <el-table-column prop="downloadCount" label="下载量" min-width="88" align="center" />
+                        <el-table-column prop="version" label="版本" width="64" align="center" />
+                        <el-table-column label="横竖屏" width="72" align="center">
                             <template #default="{ row }">
                                 {{ row.orientation === 1 ? '竖屏' : '横屏' }}
                             </template>
@@ -121,7 +120,7 @@
                         <el-table-column
                             v-if="canEdit || canDelete || canList"
                             label="操作"
-                            width="240"
+                            width="220"
                             align="center"
                             fixed="right"
                         >
@@ -213,11 +212,11 @@
                                 <el-button type="primary">选择图标</el-button>
                             </el-upload>
                             <el-image
-                                v-if="form.iconUrl"
-                                :src="form.iconUrl"
+                                v-if="iconPreview"
+                                :src="iconPreview"
                                 fit="cover"
                                 class="preview-thumb"
-                                :preview-src-list="[form.iconUrl]"
+                                :preview-src-list="[iconPreview]"
                                 preview-teleported
                             />
                         </div>
@@ -233,11 +232,11 @@
                                 <el-button>选择 Banner</el-button>
                             </el-upload>
                             <el-image
-                                v-if="form.bannerUrl"
-                                :src="form.bannerUrl"
+                                v-if="bannerPreview"
+                                :src="bannerPreview"
                                 fit="cover"
                                 class="preview-thumb preview-thumb--wide"
-                                :preview-src-list="[form.bannerUrl]"
+                                :preview-src-list="[bannerPreview]"
                                 preview-teleported
                             />
                         </div>
@@ -252,18 +251,20 @@
                             >
                                 <el-button>选择视频</el-button>
                             </el-upload>
-                            <span v-if="form.videoUrl" class="file-name">{{ getFileName(form.videoUrl) }}</span>
+                            <span v-if="videoDisplayName" class="file-name">{{ videoDisplayName }}</span>
                         </div>
                     </el-form-item>
                     <el-form-item label="详情图">
                         <div class="upload-field upload-field--column">
                             <el-upload
+                                ref="detailUploadRef"
+                                multiple
                                 :auto-upload="false"
                                 :show-file-list="false"
                                 accept=".png,.jpg,.jpeg,.webp,.gif,.bmp"
-                                :on-change="(f) => onFilePick(f, 'detail')"
+                                :on-change="onDetailFilesPick"
                             >
-                                <el-button>添加详情图</el-button>
+                                <el-button>添加详情图（可多选）</el-button>
                             </el-upload>
                             <div v-if="detailImageList.length" class="detail-images">
                                 <div v-for="(url, idx) in detailImageList" :key="url + idx" class="detail-images__item">
@@ -275,7 +276,18 @@
                     </el-form-item>
                     <el-form-item label="资源包">
                         <div class="upload-field upload-field--column">
+                            <template v-if="dialogMode === 'add'">
+                                <el-button @click="pickResourceZipForAdd">选择 ZIP 资源</el-button>
+                                <input
+                                    ref="resourceInputFallbackRef"
+                                    type="file"
+                                    accept=".zip"
+                                    class="hidden-file-input"
+                                    @change="onResourceFallbackChange"
+                                />
+                            </template>
                             <el-upload
+                                v-else
                                 :auto-upload="false"
                                 :show-file-list="false"
                                 accept=".zip"
@@ -352,7 +364,6 @@ import {
     deleteGameInfo,
     downloadGameResource,
     getGameCategoryList,
-    getGameInfoDetail,
     getGameInfoPage,
     replaceGameResource,
     updateGameInfo,
@@ -362,6 +373,15 @@ import {
     type GameInfoItem,
 } from '@/api/game'
 import { hasPerm, PERM_GAME } from '@/utils/permission'
+import {
+    detectOrientationFromImage,
+    findActionCategoryCode,
+    findEnglishLanguageCode,
+    formatGameNameFromBaseName,
+    getBaseNameFromZip,
+    loadLocalGameAssets,
+    supportsFileSystemAccessApi,
+} from '@/utils/gameLocalAssets'
 
 const title = {
     firstTitle: '游戏资源管理',
@@ -393,6 +413,14 @@ const editingId = ref<number | null>(null)
 const formRef = ref<FormInstance>()
 
 const pendingFiles = reactive<Partial<Record<GameFileType, File>>>({})
+const pendingDetailFiles = ref<{ uid: number; file: File; previewUrl: string }[]>([])
+const detailUploadRef = ref<{ clearFiles?: () => void } | null>(null)
+const resourceInputFallbackRef = ref<HTMLInputElement | null>(null)
+const gameRootDirHandle = ref<FileSystemDirectoryHandle | null>(null)
+let pendingDetailUid = 1
+const pendingIconPreview = ref('')
+const pendingBannerPreview = ref('')
+const videoFileName = ref('')
 const resourceFileName = ref('')
 const resourceChanged = ref(false)
 
@@ -420,7 +448,13 @@ const formRules: FormRules = {
     gameName: [{ required: true, message: '请输入游戏名称', trigger: 'blur' }],
     categoryCode: [{ required: true, message: '请选择游戏分类', trigger: 'change' }],
     languageCode: [{ required: true, message: '请选择语言', trigger: 'change' }],
-    iconUrl: [{ required: true, message: '请上传游戏图标', trigger: 'change' }],
+    iconUrl: [{
+        validator: (_rule, _value, callback) => {
+            if (form.iconUrl || pendingFiles.icon) callback()
+            else callback(new Error('请选择游戏图标'))
+        },
+        trigger: 'change',
+    }],
     status: [{ required: true, message: '请选择状态', trigger: 'change' }],
     orientation: [{ required: true, message: '请选择横竖屏', trigger: 'change' }],
     rating: [{ required: true, message: '请设置评分', trigger: 'change' }],
@@ -431,11 +465,20 @@ const canEdit = hasPerm(PERM_GAME.edit)
 const canDelete = hasPerm(PERM_GAME.delete)
 const canList = hasPerm(PERM_GAME.list)
 
-const detailImageList = computed(() =>
+const existingDetailImages = computed(() =>
     form.detailImages
         ? form.detailImages.split(',').map((s) => s.trim()).filter(Boolean)
         : [],
 )
+
+const detailImageList = computed(() => [
+    ...existingDetailImages.value,
+    ...pendingDetailFiles.value.map((item) => item.previewUrl),
+])
+
+const iconPreview = computed(() => pendingIconPreview.value || form.iconUrl)
+const bannerPreview = computed(() => pendingBannerPreview.value || form.bannerUrl)
+const videoDisplayName = computed(() => videoFileName.value || (form.videoUrl ? getFileName(form.videoUrl) : ''))
 
 const categoryNameMap = computed(() => {
     const map = new Map<string, string>()
@@ -445,13 +488,172 @@ const categoryNameMap = computed(() => {
     return map
 })
 
-function indexMethod(index: number) {
-    return (currentPage.value - 1) * pageSize.value + index + 1
-}
-
 function getCategoryName(code?: string) {
     if (!code) return '—'
     return categoryNameMap.value.get(code) || code
+}
+
+function isAllowedImage(file: File) {
+    return /\.(png|jpe?g|webp|gif|bmp)$/i.test(file.name)
+}
+
+function clearAutoLoadedAssetPreviews() {
+    revokeBlob(pendingIconPreview.value)
+    pendingIconPreview.value = ''
+    delete pendingFiles.icon
+    pendingDetailFiles.value.forEach((item) => revokeBlob(item.previewUrl))
+    pendingDetailFiles.value = []
+    detailUploadRef.value?.clearFiles?.()
+}
+
+function setIconFromLocalFile(file: File) {
+    pendingFiles.icon = file
+    revokeBlob(pendingIconPreview.value)
+    pendingIconPreview.value = URL.createObjectURL(file)
+    formRef.value?.validateField('iconUrl')
+}
+
+function addDetailFilesFromLocal(files: File[]) {
+    for (const file of files) {
+        if (!isAllowedImage(file)) continue
+        pendingDetailFiles.value.push({
+            uid: pendingDetailUid++,
+            file,
+            previewUrl: URL.createObjectURL(file),
+        })
+    }
+}
+
+function applyBasicDefaultsFromZip(file: File) {
+    const baseName = getBaseNameFromZip(file.name)
+    if (!baseName) return
+
+    form.gameName = formatGameNameFromBaseName(baseName)
+
+    const actionCode = findActionCategoryCode(categoryOptions.value)
+    if (actionCode) form.categoryCode = actionCode
+
+    const englishCode = findEnglishLanguageCode(languageOptions.value)
+    if (englishCode) form.languageCode = englishCode
+
+    form.rating = 5
+}
+
+async function applyAutoFillFromZip(file: File, rootHandle?: FileSystemDirectoryHandle | null) {
+    if (dialogMode.value !== 'add') return
+
+    clearAutoLoadedAssetPreviews()
+    applyBasicDefaultsFromZip(file)
+
+    if (!rootHandle) return
+
+    const baseName = getBaseNameFromZip(file.name)
+    if (!baseName) return
+
+    try {
+        const { iconFile, thumbnailFiles } = await loadLocalGameAssets(rootHandle, baseName)
+
+        if (iconFile) {
+            setIconFromLocalFile(iconFile)
+        }
+
+        if (thumbnailFiles.length) {
+            addDetailFilesFromLocal(thumbnailFiles)
+            form.orientation = await detectOrientationFromImage(thumbnailFiles[0])
+        }
+    } catch {
+        // 自动加载失败时保留基础字段默认值
+    }
+}
+
+function setResourcePendingFile(file: File) {
+    pendingFiles.resource = file
+    resourceFileName.value = file.name
+    form.resourceSize = file.size
+    resourceChanged.value = true
+}
+
+async function ensureGameRootDirHandle(): Promise<FileSystemDirectoryHandle | null> {
+    if (gameRootDirHandle.value) return gameRootDirHandle.value
+
+    if (!supportsFileSystemAccessApi()) return null
+
+    try {
+        await ElMessageBox.confirm(
+            '请选择游戏资源根目录（包含 game_files、game_icon_imgs、game_thumbnail 文件夹），用于自动加载图标和详情图。',
+            '选择资源目录',
+            {
+                confirmButtonText: '选择目录',
+                cancelButtonText: '跳过',
+                type: 'info',
+                customClass: 'app-confirm-dialog',
+                showClose: true,
+            },
+        )
+    } catch {
+        return null
+    }
+
+    try {
+        const root = await (window as any).showDirectoryPicker({ mode: 'read' })
+        gameRootDirHandle.value = root
+        return root
+    } catch (e: any) {
+        if (e?.name !== 'AbortError') {
+            ElMessage.error('选择资源目录失败')
+        }
+        return null
+    }
+}
+
+async function pickResourceZipForAdd() {
+    if (!supportsFileSystemAccessApi()) {
+        resourceInputFallbackRef.value?.click()
+        return
+    }
+
+    try {
+        const pickerOptions: {
+            types: Array<{ accept: Record<string, string[]> }>
+            multiple: boolean
+            startIn?: FileSystemDirectoryHandle
+        } = {
+            types: [{ accept: { 'application/zip': ['.zip'] } }],
+            multiple: false,
+        }
+
+        if (gameRootDirHandle.value) {
+            try {
+                pickerOptions.startIn = await gameRootDirHandle.value.getDirectoryHandle('game_files')
+            } catch {
+                pickerOptions.startIn = gameRootDirHandle.value
+            }
+        }
+
+        const [zipHandle] = await (window as any).showOpenFilePicker(pickerOptions)
+        const file = await zipHandle.getFile()
+        setResourcePendingFile(file)
+
+        let rootHandle = gameRootDirHandle.value
+        if (!rootHandle) {
+            rootHandle = await ensureGameRootDirHandle()
+        }
+
+        await applyAutoFillFromZip(file, rootHandle)
+    } catch (e: any) {
+        if (e?.name === 'AbortError') return
+        ElMessage.error('选择资源包失败')
+    }
+}
+
+async function onResourceFallbackChange(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = ''
+    if (!file) return
+
+    setResourcePendingFile(file)
+    await applyAutoFillFromZip(file, null)
 }
 
 function getFileName(url?: string) {
@@ -547,10 +749,23 @@ function handleCurrentChange() {
     loadList()
 }
 
+function revokeBlob(url: string) {
+    if (url?.startsWith('blob:')) URL.revokeObjectURL(url)
+}
+
 function clearPendingFiles() {
     Object.keys(pendingFiles).forEach((key) => delete pendingFiles[key as GameFileType])
+    pendingDetailFiles.value.forEach((item) => revokeBlob(item.previewUrl))
+    pendingDetailFiles.value = []
+    revokeBlob(pendingIconPreview.value)
+    revokeBlob(pendingBannerPreview.value)
+    pendingIconPreview.value = ''
+    pendingBannerPreview.value = ''
     resourceFileName.value = ''
+    videoFileName.value = ''
     resourceChanged.value = false
+    detailUploadRef.value?.clearFiles?.()
+    resourceInputFallbackRef.value && (resourceInputFallbackRef.value.value = '')
 }
 
 function resetForm() {
@@ -583,87 +798,114 @@ function openAddDialog() {
     dialogVisible.value = true
 }
 
-async function openEditDialog(row: GameInfoItem) {
+function openEditDialog(row: GameInfoItem) {
     dialogMode.value = 'edit'
     resetForm()
     editingId.value = Number(row.id)
-    try {
-        const res: any = await getGameInfoDetail(row.id)
-        const detail = res?.data?.data ?? res?.data ?? row
-        form.gameId = detail.gameId ?? ''
-        form.gameName = detail.gameName ?? ''
-        form.categoryCode = detail.categoryCode ?? ''
-        form.languageCode = detail.languageCode ?? ''
-        form.description = detail.description ?? ''
-        form.iconUrl = detail.iconUrl ?? ''
-        form.bannerUrl = detail.bannerUrl ?? ''
-        form.videoUrl = detail.videoUrl ?? ''
-        form.detailImages = detail.detailImages ?? ''
-        form.resourceUrl = detail.resourceUrl ?? ''
-        form.resourceSize = Number(detail.resourceSize ?? 0)
-        form.status = detail.status === 1 ? 1 : 0
-        form.orientation = detail.orientation === 1 ? 1 : 0
-        form.rating = Number(detail.rating ?? 3)
-        form.bannerPin = detail.bannerPin === 1 ? 1 : 0
-        form.hotPosition = detail.hotPosition === 1 ? 1 : 0
-        form.popularityScore = Number(detail.popularityScore ?? 0)
-        dialogVisible.value = true
-    } catch (e: any) {
-        const msg = e?.response?.data?.message
-        ElMessage.error(msg && typeof msg === 'string' ? msg : '获取详情失败')
-    }
+    form.gameId = row.gameId ?? ''
+    form.gameName = row.gameName ?? ''
+    form.categoryCode = row.categoryCode ?? ''
+    form.languageCode = row.languageCode ?? ''
+    form.description = row.description ?? ''
+    form.iconUrl = row.iconUrl ?? ''
+    form.bannerUrl = row.bannerUrl ?? ''
+    form.videoUrl = row.videoUrl ?? ''
+    form.detailImages = row.detailImages ?? ''
+    form.resourceUrl = row.resourceUrl ?? ''
+    form.resourceSize = Number(row.resourceSize ?? 0)
+    form.status = row.status === 1 ? 1 : 0
+    form.orientation = row.orientation === 1 ? 1 : 0
+    form.rating = Number(row.rating ?? 3)
+    form.bannerPin = row.bannerPin === 1 ? 1 : 0
+    form.hotPosition = row.hotPosition === 1 ? 1 : 0
+    form.popularityScore = Number(row.popularityScore ?? 0)
+    dialogVisible.value = true
 }
 
 function onFilePick(file: UploadFile, type: GameFileType) {
     const raw = file?.raw
     if (!raw) return
+
     if (type === 'resource') {
-        pendingFiles.resource = raw
-        resourceFileName.value = raw.name
-        form.resourceSize = raw.size
-        resourceChanged.value = true
+        setResourcePendingFile(raw)
         return
     }
-    if (type === 'detail') {
-        void uploadDetailImage(raw)
-        return
-    }
-    void uploadSingleFile(type, raw)
-}
 
-async function uploadSingleFile(type: GameFileType, file: File) {
-    try {
-        const url = await uploadGameFile(file, type)
-        if (type === 'icon') form.iconUrl = url
-        if (type === 'banner') form.bannerUrl = url
-        if (type === 'video') form.videoUrl = url
-        delete pendingFiles[type]
-        if (type === 'icon') formRef.value?.validateField('iconUrl')
-        ElMessage.success('上传成功')
-    } catch (e: any) {
-        const msg = e?.response?.data?.message ?? e?.message
-        ElMessage.error(msg && typeof msg === 'string' ? msg : '上传失败')
+    pendingFiles[type] = raw
+
+    if (type === 'icon') {
+        revokeBlob(pendingIconPreview.value)
+        pendingIconPreview.value = URL.createObjectURL(raw)
+        formRef.value?.validateField('iconUrl')
+    }
+    if (type === 'banner') {
+        revokeBlob(pendingBannerPreview.value)
+        pendingBannerPreview.value = URL.createObjectURL(raw)
+    }
+    if (type === 'video') {
+        videoFileName.value = raw.name
     }
 }
 
-async function uploadDetailImage(file: File) {
-    try {
-        const url = await uploadGameFile(file, 'detail')
-        const list = detailImageList.value.slice()
-        list.push(url)
-        form.detailImages = list.join(',')
-        delete pendingFiles.detail
-        ElMessage.success('详情图上传成功')
-    } catch (e: any) {
-        const msg = e?.response?.data?.message ?? e?.message
-        ElMessage.error(msg && typeof msg === 'string' ? msg : '上传失败')
+function onDetailFilesPick(_file: UploadFile, fileList: UploadFile[]) {
+    const trackedUids = new Set(pendingDetailFiles.value.map((item) => item.uid))
+    for (const item of fileList) {
+        const raw = item.raw
+        if (!raw || trackedUids.has(item.uid)) continue
+        if (!isAllowedImage(raw)) {
+            ElMessage.error(`文件 ${raw.name} 格式不支持`)
+            continue
+        }
+        pendingDetailFiles.value.push({
+            uid: item.uid,
+            file: raw,
+            previewUrl: URL.createObjectURL(raw),
+        })
+        trackedUids.add(item.uid)
     }
 }
 
 function removeDetailImage(index: number) {
-    const list = detailImageList.value.slice()
-    list.splice(index, 1)
-    form.detailImages = list.join(',')
+    const existingCount = existingDetailImages.value.length
+    if (index < existingCount) {
+        const list = existingDetailImages.value.slice()
+        list.splice(index, 1)
+        form.detailImages = list.join(',')
+        return
+    }
+    const pendingIndex = index - existingCount
+    const item = pendingDetailFiles.value[pendingIndex]
+    if (item) revokeBlob(item.previewUrl)
+    pendingDetailFiles.value.splice(pendingIndex, 1)
+}
+
+async function uploadAllPendingFiles() {
+    if (pendingFiles.icon) {
+        form.iconUrl = await uploadGameFile(pendingFiles.icon, 'icon')
+        delete pendingFiles.icon
+    }
+    if (pendingFiles.banner) {
+        form.bannerUrl = await uploadGameFile(pendingFiles.banner, 'banner')
+        delete pendingFiles.banner
+    }
+    if (pendingFiles.video) {
+        form.videoUrl = await uploadGameFile(pendingFiles.video, 'video')
+        delete pendingFiles.video
+    }
+    if (pendingDetailFiles.value.length) {
+        const urls = existingDetailImages.value.slice()
+        for (const item of pendingDetailFiles.value) {
+            urls.push(await uploadGameFile(item.file, 'detail'))
+        }
+        form.detailImages = urls.join(',')
+        pendingDetailFiles.value.forEach((item) => revokeBlob(item.previewUrl))
+        pendingDetailFiles.value = []
+    }
+    if (pendingFiles.resource) {
+        form.resourceUrl = await uploadGameFile(pendingFiles.resource, 'resource')
+        form.resourceSize = pendingFiles.resource.size
+        delete pendingFiles.resource
+    }
 }
 
 function buildPayload() {
@@ -694,20 +936,9 @@ async function saveDialog() {
     const valid = await formRef.value.validate().catch(() => false)
     if (!valid) return
 
-    if (pendingFiles.resource) {
-        try {
-            form.resourceUrl = await uploadGameFile(pendingFiles.resource, 'resource')
-            form.resourceSize = pendingFiles.resource.size
-            delete pendingFiles.resource
-        } catch (e: any) {
-            const msg = e?.response?.data?.message ?? e?.message
-            ElMessage.error(msg && typeof msg === 'string' ? msg : '资源包上传失败')
-            return
-        }
-    }
-
     submitting.value = true
     try {
+        await uploadAllPendingFiles()
         const payload = buildPayload()
         if (dialogMode.value === 'add') {
             await addGameInfo(payload)
@@ -727,7 +958,7 @@ async function saveDialog() {
         dialogVisible.value = false
         loadList()
     } catch (e: any) {
-        const msg = e?.response?.data?.message
+        const msg = e?.response?.data?.message ?? e?.message
         ElMessage.error(msg && typeof msg === 'string' ? msg : '操作失败')
     } finally {
         submitting.value = false
@@ -843,6 +1074,13 @@ onMounted(async () => {
     padding: 4px;
 }
 
+.game-resource-table :deep(.el-table__body .el-table__cell .cell),
+.game-resource-table :deep(.el-table__header .cell) {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 18px;
+}
+
 .game-form-dialog :deep(.el-dialog__body) {
     max-height: 68vh;
     overflow-y: auto;
@@ -885,5 +1123,9 @@ onMounted(async () => {
     flex-direction: column;
     align-items: center;
     gap: 4px;
+}
+
+.hidden-file-input {
+    display: none;
 }
 </style>
