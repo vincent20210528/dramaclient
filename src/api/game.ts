@@ -142,6 +142,8 @@ export const getGameInfoPage = (data: {
     categoryCode?: string
     languageCode?: string
     status?: number
+    bannerPin?: number
+    hotPosition?: number
 }) => {
     return request({
         url: '/api/gameInfo/page',
@@ -153,6 +155,8 @@ export const getGameInfoPage = (data: {
             ...(data.categoryCode?.trim() && { categoryCode: data.categoryCode.trim() }),
             ...(data.languageCode?.trim() && { languageCode: data.languageCode.trim() }),
             ...(data.status != null && { status: data.status }),
+            ...(data.bannerPin != null && { bannerPin: data.bannerPin }),
+            ...(data.hotPosition != null && { hotPosition: data.hotPosition }),
         },
     })
 }
@@ -188,6 +192,33 @@ export const deleteGameInfo = (id: number) => {
     return request({
         url: `/api/gameInfo/delete/${id}`,
         method: 'delete',
+    })
+}
+
+/** 更新 BannerPin PUT /api/gameInfo/updateBannerPin */
+export const updateGameBannerPin = (data: { id: number; bannerPin: 0 | 1 }) => {
+    return request({
+        url: '/api/gameInfo/updateBannerPin',
+        method: 'put',
+        data,
+    })
+}
+
+/** 更新热门推荐 PUT /api/gameInfo/updateHotPosition */
+export const updateGameHotPosition = (data: { id: number; hotPosition: 0 | 1 }) => {
+    return request({
+        url: '/api/gameInfo/updateHotPosition',
+        method: 'put',
+        data,
+    })
+}
+
+/** 更新上下线状态 PUT /api/gameInfo/updateStatus */
+export const updateGameStatus = (data: { id: number; status: 0 | 1 }) => {
+    return request({
+        url: '/api/gameInfo/updateStatus',
+        method: 'put',
+        data,
     })
 }
 

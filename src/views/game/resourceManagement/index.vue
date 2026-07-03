@@ -22,7 +22,6 @@
                                     clearable
                                     filterable
                                     :loading="categoryLoading"
-                                    @change="handleSearch"
                                 >
                                     <el-option
                                         v-for="item in categoryOptions"
@@ -40,7 +39,6 @@
                                     clearable
                                     filterable
                                     :loading="languageLoading"
-                                    @change="handleSearch"
                                 >
                                     <el-option
                                         v-for="item in languageOptions"
@@ -56,10 +54,31 @@
                                     class="filter-select filter-select--sm"
                                     placeholder="状态"
                                     clearable
-                                    @change="handleSearch"
                                 >
                                     <el-option label="上线" :value="1" />
                                     <el-option label="下线" :value="0" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-select
+                                    v-model="searchForm.bannerPin"
+                                    class="filter-select filter-select--sm"
+                                    placeholder="是否 Banner"
+                                    clearable
+                                >
+                                    <el-option label="是" :value="1" />
+                                    <el-option label="否" :value="0" />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item>
+                                <el-select
+                                    v-model="searchForm.hotPosition"
+                                    class="filter-select filter-select--sm"
+                                    placeholder="是否热门推荐"
+                                    clearable
+                                >
+                                    <el-option label="是" :value="1" />
+                                    <el-option label="否" :value="0" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item class="search-form__actions">
@@ -81,9 +100,23 @@
                     </div>
 
                     <el-table class="register-table game-resource-table" :data="tableData" v-loading="loading" style="width: 100%">
-                        <el-table-column prop="gameId" label="游戏ID" min-width="96" align="center" />
-                        <el-table-column prop="gameName" label="游戏名称" min-width="120" align="center" />
-                        <el-table-column label="图标" width="72" align="center">
+                        <el-table-column
+                            prop="gameId"
+                            label="游戏ID"
+                            min-width="108"
+                            align="left"
+                            header-align="left"
+                            class-name="col-left"
+                        />
+                        <el-table-column
+                            prop="gameName"
+                            label="游戏名称"
+                            min-width="132"
+                            align="left"
+                            header-align="left"
+                            class-name="col-left"
+                        />
+                        <el-table-column label="图标" width="76" align="center" header-align="center">
                             <template #default="{ row }">
                                 <el-image
                                     v-if="row.iconUrl"
@@ -96,25 +129,57 @@
                                 <span v-else class="text-muted">—</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="分类" min-width="100" align="center">
+                        <el-table-column label="分类" min-width="96" align="center" header-align="center">
                             <template #default="{ row }">
                                 {{ getCategoryName(row.categoryCode) }}
                             </template>
                         </el-table-column>
-                        <el-table-column prop="languageCode" label="语言" min-width="72" align="center" />
-                        <el-table-column label="状态" width="88" align="center">
+                        <el-table-column prop="languageCode" label="语言" min-width="80" align="center" header-align="center" />
+                        <el-table-column label="状态" min-width="108" align="center" header-align="center">
                             <template #default="{ row }">
-                                <span :class="['status-pill', row.status === 1 ? 'status-pill--ok' : 'status-pill--off']">
-                                    {{ row.status === 1 ? '上线' : '下线' }}
-                                </span>
+                                <el-switch
+                                    v-if="canEdit"
+                                    v-model="row.statusEnabled"
+                                    :active-value="true"
+                                    :inactive-value="false"
+                                    :loading="row._statusLoading"
+                                    @change="() => handleStatusChange(row)"
+                                />
+                                <span v-else>{{ row.status === 1 ? '上线' : '下线' }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="rating" label="评分" width="64" align="center" />
-                        <el-table-column prop="downloadCount" label="下载量" min-width="88" align="center" />
-                        <el-table-column prop="version" label="版本" width="64" align="center" />
-                        <el-table-column label="横竖屏" width="72" align="center">
+                        <el-table-column prop="rating" label="评分" min-width="72" align="center" header-align="center" />
+                        <el-table-column prop="downloadCount" label="下载量" min-width="96" align="center" header-align="center" />
+                        <el-table-column prop="version" label="版本" min-width="72" align="center" header-align="center" />
+                        <el-table-column label="横竖屏" min-width="88" align="center" header-align="center">
                             <template #default="{ row }">
                                 {{ row.orientation === 1 ? '竖屏' : '横屏' }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="BannerPin" min-width="108" align="center" header-align="center">
+                            <template #default="{ row }">
+                                <el-switch
+                                    v-if="canEdit"
+                                    v-model="row.bannerPinEnabled"
+                                    :active-value="true"
+                                    :inactive-value="false"
+                                    :loading="row._bannerPinLoading"
+                                    @change="() => handleBannerPinChange(row)"
+                                />
+                                <span v-else>{{ row.bannerPin === 1 ? '是' : '否' }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="热门推荐" min-width="108" align="center" header-align="center">
+                            <template #default="{ row }">
+                                <el-switch
+                                    v-if="canEdit"
+                                    v-model="row.hotPositionEnabled"
+                                    :active-value="true"
+                                    :inactive-value="false"
+                                    :loading="row._hotPositionLoading"
+                                    @change="() => handleHotPositionChange(row)"
+                                />
+                                <span v-else>{{ row.hotPosition === 1 ? '是' : '否' }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -122,6 +187,7 @@
                             label="操作"
                             width="220"
                             align="center"
+                            header-align="center"
                             fixed="right"
                         >
                             <template #default="{ row }">
@@ -367,6 +433,9 @@ import {
     getGameInfoPage,
     replaceGameResource,
     updateGameInfo,
+    updateGameBannerPin,
+    updateGameHotPosition,
+    updateGameStatus,
     uploadGameFile,
     type GameCategoryItem,
     type GameFileType,
@@ -385,7 +454,16 @@ import {
 
 const title = {
     firstTitle: '游戏资源管理',
-    secondTitle: '管理休闲游戏资源，支持按名称、分类、语言、状态筛选',
+    secondTitle: '管理休闲游戏资源，支持按名称、分类、语言、状态、Banner、热门推荐筛选',
+}
+
+type GameTableRow = GameInfoItem & {
+    statusEnabled: boolean
+    bannerPinEnabled: boolean
+    hotPositionEnabled: boolean
+    _statusLoading?: boolean
+    _bannerPinLoading?: boolean
+    _hotPositionLoading?: boolean
 }
 
 const searchForm = reactive({
@@ -393,9 +471,11 @@ const searchForm = reactive({
     categoryCode: '',
     languageCode: '',
     status: undefined as number | undefined,
+    bannerPin: undefined as number | undefined,
+    hotPosition: undefined as number | undefined,
 })
 
-const tableData = ref<GameInfoItem[]>([])
+const tableData = ref<GameTableRow[]>([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -704,6 +784,18 @@ async function loadLanguageOptions() {
     }
 }
 
+function mapGameTableRow(record: GameInfoItem): GameTableRow {
+    return {
+        ...record,
+        statusEnabled: record.status === 1,
+        bannerPinEnabled: record.bannerPin === 1,
+        hotPositionEnabled: record.hotPosition === 1,
+        _statusLoading: false,
+        _bannerPinLoading: false,
+        _hotPositionLoading: false,
+    }
+}
+
 async function loadList() {
     loading.value = true
     try {
@@ -714,9 +806,11 @@ async function loadList() {
             categoryCode: searchForm.categoryCode,
             languageCode: searchForm.languageCode,
             status: searchForm.status,
+            bannerPin: searchForm.bannerPin,
+            hotPosition: searchForm.hotPosition,
         })
         const data = res?.data?.data ?? res?.data
-        tableData.value = data?.records ?? []
+        tableData.value = (data?.records ?? []).map(mapGameTableRow)
         total.value = Number(data?.total ?? 0)
     } catch {
         tableData.value = []
@@ -736,8 +830,61 @@ function handleReset() {
     searchForm.categoryCode = ''
     searchForm.languageCode = ''
     searchForm.status = undefined
+    searchForm.bannerPin = undefined
+    searchForm.hotPosition = undefined
     currentPage.value = 1
     loadList()
+}
+
+async function handleStatusChange(row: GameTableRow) {
+    const next = row.statusEnabled ? 1 : 0
+    const prevEnabled = row.status === 1
+    row._statusLoading = true
+    try {
+        await updateGameStatus({ id: row.id, status: next as 0 | 1 })
+        row.status = next
+        ElMessage.success(next === 1 ? '游戏已上线' : '游戏已下线')
+    } catch (e: any) {
+        row.statusEnabled = prevEnabled
+        const msg = e?.response?.data?.message ?? e?.message
+        ElMessage.error(msg && typeof msg === 'string' ? msg : '状态更新失败')
+    } finally {
+        row._statusLoading = false
+    }
+}
+
+async function handleBannerPinChange(row: GameTableRow) {
+    const next = row.bannerPinEnabled ? 1 : 0
+    const prevEnabled = row.bannerPin === 1
+    row._bannerPinLoading = true
+    try {
+        await updateGameBannerPin({ id: row.id, bannerPin: next as 0 | 1 })
+        row.bannerPin = next
+        ElMessage.success(next === 1 ? 'BannerPin 已开启' : 'BannerPin 已关闭')
+    } catch (e: any) {
+        row.bannerPinEnabled = prevEnabled
+        const msg = e?.response?.data?.message ?? e?.message
+        ElMessage.error(msg && typeof msg === 'string' ? msg : 'BannerPin 更新失败')
+    } finally {
+        row._bannerPinLoading = false
+    }
+}
+
+async function handleHotPositionChange(row: GameTableRow) {
+    const next = row.hotPositionEnabled ? 1 : 0
+    const prevEnabled = row.hotPosition === 1
+    row._hotPositionLoading = true
+    try {
+        await updateGameHotPosition({ id: row.id, hotPosition: next as 0 | 1 })
+        row.hotPosition = next
+        ElMessage.success(next === 1 ? '热门推荐已开启' : '热门推荐已关闭')
+    } catch (e: any) {
+        row.hotPositionEnabled = prevEnabled
+        const msg = e?.response?.data?.message ?? e?.message
+        ElMessage.error(msg && typeof msg === 'string' ? msg : '热门推荐更新失败')
+    } finally {
+        row._hotPositionLoading = false
+    }
 }
 
 function handleSizeChange() {
@@ -1027,7 +1174,8 @@ onMounted(async () => {
 }
 
 .filter-select--sm {
-    width: 120px;
+    width: 140px;
+    min-width: 140px;
 }
 
 .game-icon {
@@ -1039,26 +1187,6 @@ onMounted(async () => {
 .text-muted {
     color: #c0c4cc;
     font-size: 12px;
-}
-
-.status-pill {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 52px;
-    height: 22px;
-    padding: 0 8px;
-    font-size: 12px;
-    border-radius: 8px;
-}
-.status-pill--ok {
-    background: #dfffd9;
-    color: #16a34a;
-}
-.status-pill--off {
-    background: #f4f4f5;
-    border: 1px solid #dcdfe6;
-    color: #909399;
 }
 
 .register-table :deep(.op-cell) {
@@ -1079,6 +1207,16 @@ onMounted(async () => {
     white-space: normal;
     word-break: break-word;
     line-height: 18px;
+}
+
+.game-resource-table :deep(th.col-left .cell),
+.game-resource-table :deep(td.col-left .cell) {
+    text-align: left;
+    justify-content: flex-start;
+}
+
+.game-resource-table :deep(.el-table__header th.el-table__cell .cell) {
+    font-weight: 700;
 }
 
 .game-form-dialog :deep(.el-dialog__body) {
