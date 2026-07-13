@@ -193,13 +193,14 @@
                             <template #default="{ row }">
                                 <div class="op-cell">
                                     <el-button
-                                        v-if="canList && row.resourceUrl"
+                                        v-if="canEdit"
                                         type="primary"
                                         link
-                                        :icon="Download"
-                                        @click="handleDownload(row)"
+                                        :icon="Upload"
+                                        :loading="row._uploadLoading"
+                                        @click="openResourceUpload(row)"
                                     >
-                                        下载
+                                        上传
                                     </el-button>
                                     <el-button v-if="canEdit" type="primary" link :icon="Edit" @click="openEditDialog(row)">
                                         编辑
@@ -225,6 +226,13 @@
                             @current-change="handleCurrentChange"
                         />
                     </div>
+                    <input
+                        ref="tableResourceInputRef"
+                        type="file"
+                        accept=".zip"
+                        class="hidden-file-input"
+                        @change="onTableResourceUploadChange"
+                    />
                 </div>
             </el-card>
 
@@ -422,16 +430,15 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules, type UploadFile } from 'element-plus'
-import { Delete, Download, Edit, Plus, Refresh } from '@element-plus/icons-vue'
+import { Delete, Edit, Plus, Refresh, Upload } from '@element-plus/icons-vue'
 import '@/views/drama/contentConfig/panelRegisterList.css'
 import { getSupportLanguagePage } from '@/api'
 import {
     addGameInfo,
     deleteGameInfo,
-    downloadGameResource,
     getGameCategoryList,
     getGameInfoPage,
-    replaceGameResource,
+    updateGameResource,
     updateGameInfo,
     updateGameBannerPin,
     updateGameHotPosition,
@@ -464,6 +471,7 @@ type GameTableRow = GameInfoItem & {
     _statusLoading?: boolean
     _bannerPinLoading?: boolean
     _hotPositionLoading?: boolean
+    _uploadLoading?: boolean
 }
 
 const searchForm = reactive({
@@ -496,6 +504,8 @@ const pendingFiles = reactive<Partial<Record<GameFileType, File>>>({})
 const pendingDetailFiles = ref<{ uid: number; file: File; previewUrl: string }[]>([])
 const detailUploadRef = ref<{ clearFiles?: () => void } | null>(null)
 const resourceInputFallbackRef = ref<HTMLInputElement | null>(null)
+const tableResourceInputRef = ref<HTMLInputElement | null>(null)
+const uploadingRowId = ref<number | null>(null)
 const gameRootDirHandle = ref<FileSystemDirectoryHandle | null>(null)
 let pendingDetailUid = 1
 const pendingIconPreview = ref('')
@@ -793,6 +803,7 @@ function mapGameTableRow(record: GameInfoItem): GameTableRow {
         _statusLoading: false,
         _bannerPinLoading: false,
         _hotPositionLoading: false,
+        _uploadLoading: false,
     }
 }
 
@@ -1094,7 +1105,7 @@ async function saveDialog() {
             if (editingId.value == null) return
             await updateGameInfo({ id: editingId.value, ...payload })
             if (resourceChanged.value && form.resourceUrl) {
-                await replaceGameResource({
+                await updateGameResource({
                     id: editingId.value,
                     resourceUrl: form.resourceUrl,
                     resourceSize: form.resourceSize,
@@ -1109,6 +1120,46 @@ async function saveDialog() {
         ElMessage.error(msg && typeof msg === 'string' ? msg : '操作失败')
     } finally {
         submitting.value = false
+    }
+}
+
+function openResourceUpload(row: GameTableRow) {
+    if (!canEdit) return
+    uploadingRowId.value = Number(row.id)
+    tableResourceInputRef.value?.click()
+}
+
+async function onTableResourceUploadChange(event: Event) {
+    const input = event.target as HTMLInputElement
+    const file = input.files?.[0]
+    input.value = ''
+    const rowId = uploadingRowId.value
+    uploadingRowId.value = null
+    if (!file || rowId == null) return
+
+    if (!/\.zip$/i.test(file.name)) {
+        ElMessage.error('请选择 ZIP 格式资源包')
+        return
+    }
+
+    const row = tableData.value.find((item) => item.id === rowId)
+    if (!row) return
+
+    row._uploadLoading = true
+    try {
+        const resourceUrl = await uploadGameFile(file, 'resource')
+        await updateGameResource({
+            id: rowId,
+            resourceUrl,
+            resourceSize: file.size,
+        })
+        ElMessage.success('资源包上传成功')
+        loadList()
+    } catch (e: any) {
+        const msg = e?.response?.data?.message ?? e?.message
+        ElMessage.error(msg && typeof msg === 'string' ? msg : '资源包上传失败')
+    } finally {
+        row._uploadLoading = false
     }
 }
 
@@ -1128,25 +1179,6 @@ async function removeItem(id: number) {
         if (e === 'cancel') return
         const msg = e?.response?.data?.message
         ElMessage.error(msg && typeof msg === 'string' ? msg : '删除失败')
-    }
-}
-
-async function handleDownload(row: GameInfoItem) {
-    try {
-        const res: any = await downloadGameResource(row.id)
-        const url = res?.data?.data ?? res?.data
-        if (typeof url === 'string' && url) {
-            window.open(url, '_blank')
-            return
-        }
-        if (url?.url) {
-            window.open(url.url, '_blank')
-            return
-        }
-        ElMessage.error('获取下载地址失败')
-    } catch (e: any) {
-        const msg = e?.response?.data?.message
-        ElMessage.error(msg && typeof msg === 'string' ? msg : '下载失败')
     }
 }
 

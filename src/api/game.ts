@@ -253,15 +253,15 @@ export async function uploadGameFile(file: File, fileType: GameFileType): Promis
     return data.fileUrl
 }
 
-/** 替换游戏资源 POST /api/gameFile/replace */
-export const replaceGameResource = (data: {
+/** 更新游戏资源地址 PUT /api/gameFile/updateResource */
+export const updateGameResource = (data: {
     id: number
     resourceUrl: string
     resourceSize: number
 }) => {
     return request({
-        url: '/api/gameFile/replace',
-        method: 'post',
+        url: '/api/gameFile/updateResource',
+        method: 'put',
         data,
     })
 }
