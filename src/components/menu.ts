@@ -258,6 +258,13 @@ export const menuData: Menus[] = [
                 index: '/game/resourceManagement',
                 title: '游戏资源管理',
             },
+            {
+                id: '11-3',
+                pid: '11',
+                icon: 'Promotion',
+                index: '/game/adPlacement',
+                title: '游戏广告位管理',
+            },
         ],
     },
     {

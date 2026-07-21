@@ -199,3 +199,9 @@ export const PERM_GAME = {
     edit: 'system:game:edit',
     delete: 'system:game:delete',
 } as const
+
+/** ??????? */
+export const PERM_GAME_AD = {
+    list: 'system:gameAd:list',
+    edit: 'system:gameAd:edit',
+} as const

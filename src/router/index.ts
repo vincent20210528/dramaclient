@@ -146,6 +146,18 @@ const routes: RouteRecordRaw[] = [
                     ),
             },
             {
+                path: '/game/adPlacement',
+                name: 'gameAdPlacement',
+                meta: {
+                    title: '游戏广告位管理',
+                    permiss: '11',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "gameAdPlacement" */ '../views/game/adPlacement/index.vue'
+                    ),
+            },
+            {
                 path: '/system/userManagement',
                 name: 'userManagement',
                 meta: {

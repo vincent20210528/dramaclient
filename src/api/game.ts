@@ -273,3 +273,38 @@ export const downloadGameResource = (id: number) => {
         method: 'get',
     })
 }
+
+export interface GameAdPlacementItem {
+    id: number
+    placementKey: string
+    placementName: string
+    placementId?: string | null
+    enabled: number
+    intervalSeconds?: number | null
+    intervalCount?: number | null
+    supportFrequency?: number
+    sortOrder?: number
+}
+
+/** ??????? GET /api/gameAdPlacement/list */
+export const getGameAdPlacementList = () => {
+    return request({
+        url: '/api/gameAdPlacement/list',
+        method: 'get',
+    })
+}
+
+/** ??????? PUT /api/gameAdPlacement/update */
+export const updateGameAdPlacement = (data: {
+    id: number
+    placementId?: string
+    enabled?: number
+    intervalSeconds?: number | null
+    intervalCount?: number | null
+}) => {
+    return request({
+        url: '/api/gameAdPlacement/update',
+        method: 'put',
+        data,
+    })
+}
