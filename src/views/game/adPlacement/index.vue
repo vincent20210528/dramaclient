@@ -4,7 +4,7 @@
             <el-card class="list-card" shadow="never">
                 <div class="panel-wrap panel-register-wrap">
                     <div class="table-toolbar">
-                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置频次</span>
+                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置时间间隔与进程内展示次数</span>
                         <span class="toolbar-actions">
                             <el-icon class="toolbar-icon" @click="loadList"><Refresh /></el-icon>
                         </span>
@@ -37,7 +37,7 @@
                                 <span v-else class="muted">—</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="间隔次数" width="110" align="center">
+                        <el-table-column label="进程内次数" width="110" align="center">
                             <template #default="{ row }">
                                 <span v-if="row.supportFrequency === 1">{{ row.intervalCount ?? '—' }}</span>
                                 <span v-else class="muted">—</span>
@@ -94,12 +94,12 @@
                                 style="width: 100%"
                             />
                         </el-form-item>
-                        <el-form-item label="间隔次数">
+                        <el-form-item label="进程内次数">
                             <el-input-number
                                 v-model="form.intervalCount"
                                 :min="0"
                                 :controls="true"
-                                placeholder="0 表示不限制"
+                                placeholder="0 表示不限制（进程内最多展示次数）"
                                 style="width: 100%"
                             />
                         </el-form-item>
