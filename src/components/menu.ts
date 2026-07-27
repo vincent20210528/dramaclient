@@ -265,6 +265,13 @@ export const menuData: Menus[] = [
                 index: '/game/adPlacement',
                 title: '游戏广告位管理',
             },
+            {
+                id: '11-4',
+                pid: '11',
+                icon: 'Present',
+                index: '/game/directAd',
+                title: '直客广告',
+            },
         ],
     },
     {

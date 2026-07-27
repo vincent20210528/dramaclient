@@ -158,6 +158,18 @@ const routes: RouteRecordRaw[] = [
                     ),
             },
             {
+                path: '/game/directAd',
+                name: 'gameDirectAd',
+                meta: {
+                    title: '直客广告',
+                    permiss: '11',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "gameDirectAd" */ '../views/game/directAd/index.vue'
+                    ),
+            },
+            {
                 path: '/system/userManagement',
                 name: 'userManagement',
                 meta: {

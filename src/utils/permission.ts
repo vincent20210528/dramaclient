@@ -200,8 +200,16 @@ export const PERM_GAME = {
     delete: 'system:game:delete',
 } as const
 
-/** ??????? */
+/** 游戏广告位管理 */
 export const PERM_GAME_AD = {
     list: 'system:gameAd:list',
     edit: 'system:gameAd:edit',
+} as const
+
+/** 直客广告管理 */
+export const PERM_GAME_DIRECT_AD = {
+    list: 'system:gameDirectAd:list',
+    add: 'system:gameDirectAd:add',
+    edit: 'system:gameDirectAd:edit',
+    delete: 'system:gameDirectAd:delete',
 } as const

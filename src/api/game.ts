@@ -294,7 +294,7 @@ export const getGameAdPlacementList = () => {
     })
 }
 
-/** ??????? PUT /api/gameAdPlacement/update */
+/** 更新广告位 PUT /api/gameAdPlacement/update */
 export const updateGameAdPlacement = (data: {
     id: number
     placementId?: string
@@ -306,5 +306,109 @@ export const updateGameAdPlacement = (data: {
         url: '/api/gameAdPlacement/update',
         method: 'put',
         data,
+    })
+}
+
+// ========== 直客广告管理 ==========
+
+/** 1开屏 2插屏 3激励 */
+export type GameDirectAdType = 1 | 2 | 3
+/** 1安装 2查看详情 */
+export type GameDirectAdActionType = 1 | 2
+
+export interface GameDirectAdItem {
+    id: number
+    title: string
+    description?: string | null
+    imageUrl?: string | null
+    videoUrl?: string | null
+    iconUrl?: string | null
+    actionType: GameDirectAdActionType | number
+    landingUrl: string
+    adType: GameDirectAdType | number
+    rewardCountdownSec?: number | null
+    rewardClickEarly?: number | null
+    weight: number
+    status: number
+    createdAt?: string
+    updatedAt?: string
+}
+
+export type GameDirectAdPayload = {
+    title: string
+    description?: string
+    imageUrl?: string
+    videoUrl?: string
+    iconUrl?: string
+    actionType: number
+    landingUrl: string
+    adType: number
+    rewardCountdownSec?: number | null
+    rewardClickEarly?: number
+    weight: number
+    status?: number
+}
+
+/** 直客广告分页 POST /api/gameDirectAd/page */
+export const getGameDirectAdPage = (data: {
+    current: number
+    size: number
+    title?: string
+    adType?: number
+    status?: number
+}) => {
+    return request({
+        url: '/api/gameDirectAd/page',
+        method: 'post',
+        data: {
+            current: data.current,
+            size: data.size,
+            ...(data.title?.trim() && { title: data.title.trim() }),
+            ...(data.adType != null && { adType: data.adType }),
+            ...(data.status != null && { status: data.status }),
+        },
+    })
+}
+
+/** 直客广告详情 GET /api/gameDirectAd/detail/{id} */
+export const getGameDirectAdDetail = (id: number) => {
+    return request({
+        url: `/api/gameDirectAd/detail/${id}`,
+        method: 'get',
+    })
+}
+
+/** 新增直客广告 POST /api/gameDirectAd/add */
+export const addGameDirectAd = (data: GameDirectAdPayload) => {
+    return request({
+        url: '/api/gameDirectAd/add',
+        method: 'post',
+        data,
+    })
+}
+
+/** 更新直客广告 PUT /api/gameDirectAd/update */
+export const updateGameDirectAd = (data: GameDirectAdPayload & { id: number }) => {
+    return request({
+        url: '/api/gameDirectAd/update',
+        method: 'put',
+        data,
+    })
+}
+
+/** 上下线 PUT /api/gameDirectAd/updateStatus */
+export const updateGameDirectAdStatus = (data: { id: number; status: number }) => {
+    return request({
+        url: '/api/gameDirectAd/updateStatus',
+        method: 'put',
+        data,
+    })
+}
+
+/** 删除直客广告 DELETE /api/gameDirectAd/delete/{id} */
+export const deleteGameDirectAd = (id: number) => {
+    return request({
+        url: `/api/gameDirectAd/delete/${id}`,
+        method: 'delete',
     })
 }
