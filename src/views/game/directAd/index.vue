@@ -403,9 +403,9 @@ async function loadList() {
             adType: filterAdType.value,
             status: filterStatus.value,
         })
-        const page = res?.data ?? res
-        tableData.value = page?.records || []
-        total.value = Number(page?.total || 0)
+        const data = res?.data?.data ?? res?.data
+        tableData.value = data?.records ?? []
+        total.value = Number(data?.total ?? 0)
     } catch (e: any) {
         ElMessage.error(e?.response?.data?.message || '加载失败')
     } finally {
