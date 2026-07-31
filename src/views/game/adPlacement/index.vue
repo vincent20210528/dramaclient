@@ -4,7 +4,7 @@
             <el-card class="list-card" shadow="never">
                 <div class="panel-wrap panel-register-wrap">
                     <div class="table-toolbar">
-                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置时间间隔与进程内展示次数</span>
+                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置时间间隔、进程内次数与间隔次数</span>
                         <span class="toolbar-actions">
                             <el-icon class="toolbar-icon" @click="loadList"><Refresh /></el-icon>
                         </span>
@@ -40,6 +40,12 @@
                         <el-table-column label="进程内次数" width="110" align="center">
                             <template #default="{ row }">
                                 <span v-if="row.supportFrequency === 1">{{ row.intervalCount ?? '—' }}</span>
+                                <span v-else class="muted">—</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="间隔次数" width="110" align="center">
+                            <template #default="{ row }">
+                                <span v-if="row.supportFrequency === 1">{{ row.newIntervalCount ?? '—' }}</span>
                                 <span v-else class="muted">—</span>
                             </template>
                         </el-table-column>
@@ -103,6 +109,15 @@
                                 style="width: 100%"
                             />
                         </el-form-item>
+                        <el-form-item label="间隔次数">
+                            <el-input-number
+                                v-model="form.newIntervalCount"
+                                :min="0"
+                                :controls="true"
+                                placeholder="0 表示不限制"
+                                style="width: 100%"
+                            />
+                        </el-form-item>
                     </template>
                 </el-form>
                 <template #footer>
@@ -141,6 +156,7 @@ const form = reactive({
     enabled: 1,
     intervalSeconds: undefined as number | undefined,
     intervalCount: undefined as number | undefined,
+    newIntervalCount: undefined as number | undefined,
     supportFrequency: 0,
 })
 
@@ -166,6 +182,7 @@ function openEditDialog(row: GameAdPlacementItem) {
     form.enabled = row.enabled === 0 ? 0 : 1
     form.intervalSeconds = row.intervalSeconds ?? undefined
     form.intervalCount = row.intervalCount ?? undefined
+    form.newIntervalCount = row.newIntervalCount ?? undefined
     form.supportFrequency = row.supportFrequency ?? 0
     dialogVisible.value = true
 }
@@ -178,6 +195,7 @@ function resetForm() {
     form.enabled = 1
     form.intervalSeconds = undefined
     form.intervalCount = undefined
+    form.newIntervalCount = undefined
     form.supportFrequency = 0
 }
 
@@ -191,6 +209,7 @@ async function saveDialog() {
             enabled: form.enabled,
             intervalSeconds: form.supportFrequency === 1 ? (form.intervalSeconds ?? 0) : null,
             intervalCount: form.supportFrequency === 1 ? (form.intervalCount ?? 0) : null,
+            newIntervalCount: form.supportFrequency === 1 ? (form.newIntervalCount ?? 0) : null,
         })
         ElMessage.success('保存成功')
         dialogVisible.value = false

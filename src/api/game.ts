@@ -282,6 +282,8 @@ export interface GameAdPlacementItem {
     enabled: number
     intervalSeconds?: number | null
     intervalCount?: number | null
+    /** 间隔次数（开屏/插屏；0=不限制） */
+    newIntervalCount?: number | null
     supportFrequency?: number
     sortOrder?: number
 }
@@ -301,6 +303,7 @@ export const updateGameAdPlacement = (data: {
     enabled?: number
     intervalSeconds?: number | null
     intervalCount?: number | null
+    newIntervalCount?: number | null
 }) => {
     return request({
         url: '/api/gameAdPlacement/update',
@@ -311,8 +314,8 @@ export const updateGameAdPlacement = (data: {
 
 // ========== 直客广告管理 ==========
 
-/** 1开屏 2插屏 3激励 */
-export type GameDirectAdType = 1 | 2 | 3
+/** 1开屏 2插屏 3激励 4五星评价APP */
+export type GameDirectAdType = 1 | 2 | 3 | 4
 /** 1安装 2查看详情 */
 export type GameDirectAdActionType = 1 | 2
 
