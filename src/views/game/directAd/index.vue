@@ -16,11 +16,10 @@
                                 />
                             </el-form-item>
                             <el-form-item>
-                                <el-select v-model="filterAdType" clearable placeholder="广告类型" style="width: 160px">
+                                <el-select v-model="filterAdType" clearable placeholder="广告类型" style="width: 140px">
                                     <el-option label="开屏" :value="1" />
                                     <el-option label="插屏" :value="2" />
                                     <el-option label="激励" :value="3" />
-                                    <el-option label="五星评价APP" :value="4" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item>
@@ -156,13 +155,13 @@
                             <el-radio :value="1">开屏</el-radio>
                             <el-radio :value="2">插屏</el-radio>
                             <el-radio :value="3">激励</el-radio>
-                            <el-radio :value="4">五星评价APP</el-radio>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="广告行为" prop="actionType">
                         <el-radio-group v-model="form.actionType">
                             <el-radio :value="1">安装</el-radio>
                             <el-radio :value="2">查看详情</el-radio>
+                            <el-radio :value="3">五星评价APP</el-radio>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item label="落地页地址" prop="landingUrl">
@@ -305,7 +304,7 @@ import { uploadByPut } from '@/utils/obsUpload'
 
 const title = {
     firstTitle: '直客广告',
-    secondTitle: '管理开屏 / 插屏 / 激励 / 五星评价APP 直客广告，支持按权重打底',
+    secondTitle: '管理开屏 / 插屏 / 激励直客广告，支持按权重打底',
 }
 
 const keyword = ref('')
@@ -371,15 +370,14 @@ const previewMap: Record<MediaKey, typeof iconPreview> = {
 }
 
 function adTypeLabel(t: number) {
-    if (t === 1) return '开屏'
-    if (t === 2) return '插屏'
-    if (t === 3) return '激励'
-    if (t === 4) return '五星评价APP'
-    return '—'
+    return t === 1 ? '开屏' : t === 2 ? '插屏' : t === 3 ? '激励' : '—'
 }
 
 function actionTypeLabel(t: number) {
-    return t === 1 ? '安装' : t === 2 ? '查看详情' : '—'
+    if (t === 1) return '安装'
+    if (t === 2) return '查看详情'
+    if (t === 3) return '五星评价APP'
+    return '—'
 }
 
 function indexMethod(index: number) {
