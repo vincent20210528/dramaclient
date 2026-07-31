@@ -24,9 +24,20 @@
                                 <span>{{ row.placementId || '（使用默认）' }}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="状态" width="100" align="center">
+                        <el-table-column label="状态" width="110" align="center">
                             <template #default="{ row }">
-                                <el-tag :type="row.enabled === 1 ? 'success' : 'info'" size="small">
+                                <el-switch
+                                    v-if="canEdit"
+                                    :model-value="row.enabled"
+                                    :active-value="1"
+                                    :inactive-value="0"
+                                    inline-prompt
+                                    active-text="开"
+                                    inactive-text="关"
+                                    :loading="enabledLoadingId === row.id"
+                                    @change="(v: string | number | boolean) => toggleEnabled(row, Number(v))"
+                                />
+                                <el-tag v-else :type="row.enabled === 1 ? 'success' : 'info'" size="small">
                                     {{ row.enabled === 1 ? '开启' : '关闭' }}
                                 </el-tag>
                             </template>
@@ -145,6 +156,7 @@ const canEdit = computed(() => hasPerm(PERM_GAME_AD.edit) || hasPerm(PERM_GAME_A
 
 const loading = ref(false)
 const saving = ref(false)
+const enabledLoadingId = ref<number | null>(null)
 const tableData = ref<GameAdPlacementItem[]>([])
 const dialogVisible = ref(false)
 
@@ -197,6 +209,20 @@ function resetForm() {
     form.intervalCount = undefined
     form.newIntervalCount = undefined
     form.supportFrequency = 0
+}
+
+async function toggleEnabled(row: GameAdPlacementItem, enabled: number) {
+    if (row.enabled === enabled) return
+    enabledLoadingId.value = row.id
+    try {
+        await updateGameAdPlacement({ id: row.id, enabled })
+        row.enabled = enabled
+        ElMessage.success(enabled === 1 ? '已开启' : '已关闭')
+    } catch (e: any) {
+        ElMessage.error(e?.response?.data?.message ?? e?.message ?? '状态更新失败')
+    } finally {
+        enabledLoadingId.value = null
+    }
 }
 
 async function saveDialog() {
