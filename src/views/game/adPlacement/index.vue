@@ -4,7 +4,7 @@
             <el-card class="list-card" shadow="never">
                 <div class="panel-wrap panel-register-wrap">
                     <div class="table-toolbar">
-                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置时间间隔、进程内次数与间隔次数</span>
+                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置时间间隔与次数；「下载前-激励」默认关闭，间隔次数=本地下载次数阈值</span>
                         <span class="toolbar-actions">
                             <el-icon class="toolbar-icon" @click="loadList"><Refresh /></el-icon>
                         </span>
@@ -54,7 +54,7 @@
                                 <span v-else class="muted">—</span>
                             </template>
                         </el-table-column>
-                        <el-table-column label="间隔次数" width="110" align="center">
+                        <el-table-column label="间隔次数" width="120" align="center">
                             <template #default="{ row }">
                                 <span v-if="row.supportFrequency === 1">{{ row.newIntervalCount ?? '—' }}</span>
                                 <span v-else class="muted">—</span>
@@ -101,7 +101,19 @@
                             inactive-text="关闭"
                         />
                     </el-form-item>
-                    <template v-if="form.supportFrequency === 1">
+                    <template v-if="form.supportFrequency === 1 && form.placementKey === 'DOWNLOAD_REWARD'">
+                        <el-form-item label="触发下载次数">
+                            <el-input-number
+                                v-model="form.newIntervalCount"
+                                :min="0"
+                                :controls="true"
+                                placeholder="本地下载次数达到该值时需观看激励"
+                                style="width: 100%"
+                            />
+                        </el-form-item>
+                        <div class="form-tip">App 将下载次数记在本地 SP；达到该值后弹窗引导观看激励视频，获得权益后计数清零。0 或空表示每次下载都需观看激励。</div>
+                    </template>
+                    <template v-else-if="form.supportFrequency === 1">
                         <el-form-item label="间隔秒数">
                             <el-input-number
                                 v-model="form.intervalSeconds"
@@ -229,12 +241,17 @@ async function saveDialog() {
     if (!form.id) return
     saving.value = true
     try {
+        const isDownloadReward = form.placementKey === 'DOWNLOAD_REWARD'
         await updateGameAdPlacement({
             id: form.id,
             placementId: form.placementId ?? '',
             enabled: form.enabled,
-            intervalSeconds: form.supportFrequency === 1 ? (form.intervalSeconds ?? 0) : null,
-            intervalCount: form.supportFrequency === 1 ? (form.intervalCount ?? 0) : null,
+            intervalSeconds: form.supportFrequency === 1 && !isDownloadReward
+                ? (form.intervalSeconds ?? 0)
+                : null,
+            intervalCount: form.supportFrequency === 1 && !isDownloadReward
+                ? (form.intervalCount ?? 0)
+                : null,
             newIntervalCount: form.supportFrequency === 1 ? (form.newIntervalCount ?? 0) : null,
         })
         ElMessage.success('保存成功')
@@ -264,5 +281,12 @@ onMounted(() => loadList())
 
 .ad-form {
     padding-right: 12px;
+}
+
+.form-tip {
+    margin: -6px 0 12px 120px;
+    color: #909399;
+    font-size: 12px;
+    line-height: 1.5;
 }
 </style>
