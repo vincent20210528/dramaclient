@@ -4,7 +4,7 @@
             <el-card class="list-card" shadow="never">
                 <div class="panel-wrap panel-register-wrap">
                     <div class="table-toolbar">
-                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置时间间隔与次数；「下载前-激励」默认关闭，间隔次数=本地下载次数阈值</span>
+                        <span class="toolbar-tip">广告位 ID 留空则 App 使用本地默认值；插屏/开屏可配置时间间隔与次数；「下载前-激励」默认关闭；NATIVE_AD_MAIN_1/2、NATIVE_AD_LOCAL_1 为 Everyone 样式原生位</span>
                         <span class="toolbar-actions">
                             <el-icon class="toolbar-icon" @click="loadList"><Refresh /></el-icon>
                         </span>
