@@ -213,3 +213,8 @@ export const PERM_GAME_DIRECT_AD = {
     edit: 'system:gameDirectAd:edit',
     delete: 'system:gameDirectAd:delete',
 } as const
+
+/** AI 壁纸生成 */
+export const PERM_WALLPAPER = {
+    generate: 'system:wallpaper:generate',
+} as const

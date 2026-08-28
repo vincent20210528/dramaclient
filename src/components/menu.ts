@@ -275,6 +275,21 @@ export const menuData: Menus[] = [
         ],
     },
     {
+        id: '12',
+        icon: 'Picture',
+        index: '/ai',
+        title: 'AI工具',
+        children: [
+            {
+                id: '12-1',
+                pid: '12',
+                icon: 'PictureFilled',
+                index: '/ai/wallpaper',
+                title: '壁纸生成',
+            },
+        ],
+    },
+    {
         id: '3',
         icon: 'Setting',
         index: '/system',

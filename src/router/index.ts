@@ -170,6 +170,18 @@ const routes: RouteRecordRaw[] = [
                     ),
             },
             {
+                path: '/ai/wallpaper',
+                name: 'aiWallpaper',
+                meta: {
+                    title: '壁纸生成',
+                    permiss: '12',
+                },
+                component: () =>
+                    import(
+                        /* webpackChunkName: "aiWallpaper" */ '../views/ai/wallpaper/index.vue'
+                    ),
+            },
+            {
                 path: '/system/userManagement',
                 name: 'userManagement',
                 meta: {
