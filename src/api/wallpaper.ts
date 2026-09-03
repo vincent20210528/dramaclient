@@ -1,7 +1,7 @@
 import request from '../utils/request'
 
 export interface WallpaperGeneratePayload {
-    provider?: 'gemini' | 'cloudflare'
+    provider?: 'gemini' | 'cloudflare' | 'sensenova'
     model?: string
     styleCategory: string
     subject: string
@@ -13,6 +13,8 @@ export interface WallpaperGeneratePayload {
     imageSize?: string
     promptOverride?: string
     steps?: number
+    watermark?: boolean
+    promptExtend?: boolean
 }
 
 export interface WallpaperGenerateResult {
@@ -43,6 +45,8 @@ export const generateWallpaper = (data: WallpaperGeneratePayload) => {
             aspectRatio: data.aspectRatio || '9:16',
             imageSize: data.imageSize || '2K',
             ...(data.steps != null && { steps: data.steps }),
+            ...(data.watermark != null && { watermark: data.watermark }),
+            ...(data.promptExtend != null && { promptExtend: data.promptExtend }),
             ...(data.promptOverride != null &&
                 data.promptOverride !== '' && { promptOverride: data.promptOverride }),
         },

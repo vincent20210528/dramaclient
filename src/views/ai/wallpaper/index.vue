@@ -40,11 +40,18 @@
                                     <el-option label="4:3 横屏" value="4:3" />
                                 </el-select>
                             </el-form-item>
-                            <el-form-item v-if="form.provider === 'gemini'" label="分辨率档位">
+                            <el-form-item
+                                v-if="form.provider === 'gemini' || form.provider === 'sensenova'"
+                                label="分辨率档位"
+                            >
                                 <el-select v-model="form.imageSize" style="width: 100%">
-                                    <el-option label="1K" value="1K" />
                                     <el-option label="2K（推荐）" value="2K" />
-                                    <el-option label="4K" value="4K" />
+                                    <el-option
+                                        v-if="form.provider === 'sensenova' && form.model === 'sensenova-u1.5-lite'"
+                                        label="4K"
+                                        value="4K"
+                                    />
+                                    <el-option v-if="form.provider === 'gemini'" label="1K" value="1K" />
                                 </el-select>
                             </el-form-item>
                             <el-form-item v-if="form.provider === 'cloudflare'" label="Steps（1-8）">
@@ -81,6 +88,16 @@
                                     :rows="2"
                                     placeholder="例如：电影级广角镜头，超高细节，上下留安全边距"
                                 />
+                            </el-form-item>
+                            <el-form-item v-if="form.provider === 'sensenova'" label="SenseNova 选项">
+                                <el-checkbox v-model="form.watermark">添加官方水印</el-checkbox>
+                                <el-checkbox
+                                    v-if="form.model === 'sensenova-u1.5-lite'"
+                                    v-model="form.promptExtend"
+                                    style="margin-left: 12px"
+                                >
+                                    提示词自动扩写
+                                </el-checkbox>
                             </el-form-item>
                             <el-form-item label="负面提示（可选）">
                                 <el-input
@@ -144,6 +161,12 @@ const canGenerate = computed(() => hasPerm(PERM_WALLPAPER.generate) || hasPerm('
 
 const providers = [
     {
+        id: 'sensenova' as const,
+        label: 'SenseNova 日日新',
+        models: ['sensenova-u1.5-lite', 'sensenova-u1-fast'],
+        supportsImageSize: true,
+    },
+    {
         id: 'cloudflare' as const,
         label: 'Cloudflare Workers AI',
         models: [
@@ -151,17 +174,19 @@ const providers = [
             '@cf/stabilityai/stable-diffusion-xl-base-1.0',
             '@cf/lykon/dreamshaper-8-lcm',
         ],
+        supportsImageSize: false,
     },
     {
         id: 'gemini' as const,
         label: 'Google Gemini',
         models: ['gemini-2.5-flash-image', 'gemini-2.0-flash-preview-image-generation'],
+        supportsImageSize: true,
     },
 ]
 
 const form = reactive({
-    provider: 'cloudflare' as 'gemini' | 'cloudflare',
-    model: '@cf/black-forest-labs/flux-1-schnell',
+    provider: 'sensenova' as 'gemini' | 'cloudflare' | 'sensenova',
+    model: 'sensenova-u1.5-lite',
     styleCategory: '',
     aspectRatio: '9:16',
     imageSize: '2K',
@@ -171,6 +196,8 @@ const form = reactive({
     style: '',
     params: '',
     negative: '',
+    watermark: false,
+    promptExtend: true,
 })
 
 const currentModels = computed(() => {
@@ -217,6 +244,8 @@ const handleGenerate = async () => {
             aspectRatio: form.aspectRatio,
             imageSize: form.imageSize,
             steps: form.steps,
+            watermark: form.watermark,
+            promptExtend: form.promptExtend,
         })
         // axios: res.data = ApiResponse；业务体在 res.data.data
         const payload = res?.data
